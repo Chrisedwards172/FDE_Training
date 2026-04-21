@@ -44,9 +44,10 @@ The specific rubric (criteria, weights, and pass threshold) for each gate is sea
 Available in the cohort Teams space and in this folder:
 
 - `Sources/the-fde.md` — FDE role definition (pre-reading before Week 1)
+- `Week1-Thinking-Discipline-Primer.md` — Week 1 thinking-discipline primer: Cagan four-risk lens, Assumption/Hypothesis/Test/Confidence shape, coach-slot discipline
 - `spec-ambiguity-vs-builder-mistakes.md` — build-loop diagnostic taxonomy used in Weeks 1–5
 - `production-spec-checklist.md` — what makes a spec buildable
-- `integration-spec-template.md` — spec template used from Week 3 onward
+- `../Spec-Generation/integration-spec-template.md` — spec template used from Week 1 onward; hand this to an AI agent alongside a scenario to produce a buildable specification. Populated specs live alongside it in `Spec-Generation/` (e.g. `spec-hr-onboarding-coordination.md`).
 - `claude-md-examples-guide.md` — CLAUDE.md examples and failure modes
 - `discovery-questioning-patterns.md` — discovery framework used in Weeks 2, 3, 4
 - `references/atx-concepts.md`, `atx-assessment.md`, `atx-agent-mapping.md`, `atx-scoring.md`, `atx-economics.md` — ATX methodology (primarily Week 2 and Week 4)
