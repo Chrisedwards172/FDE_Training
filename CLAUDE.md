@@ -18,22 +18,24 @@ The primary audience is program participants (FDE trainees), coaches, and squad 
 ```
 FDE_Training/
 ├── CLAUDE.md                          ← this file (project constitution)
-├── Intro+Week1/                       ← participant-facing docs for Intro and Week 1
+├── SupportingDocs/                    ← reference material used across all weeks
 │   ├── README-Participants.md         ← documentation index (start here)
 │   ├── README-Participants-Intro-Week1.md  ← orientation + Week 1 guide
 │   ├── README-Participants-Week1-Scenarios.md  ← 7 practice scenarios
 │   ├── Week1-Thinking-Discipline-Primer.md    ← Week 1 thinking-discipline primer
 │   ├── claude-md-examples-guide.md    ← CLAUDE.md examples (3 quality tiers)
 │   ├── production-spec-checklist.md   ← what makes a spec buildable
-│   └── spec-ambiguity-vs-builder-mistakes.md  ← build-loop diagnostic taxonomy
-├── Spec-Generation/                   ← spec-generation tooling and outputs
-│   ├── integration-spec-template.md   ← scenario-agnostic spec template (input to AI agent)
-│   └── spec-*.md                      ← populated specs per scenario (agent output)
-└── Sources/
-    └── the-fde.md                     ← FDE role definition (canonical source)
+│   ├── spec-ambiguity-vs-builder-mistakes.md  ← build-loop diagnostic taxonomy
+│   └── the-fde.md                     ← FDE role definition (canonical source)
+├── Week1/                             ← Week 1 working area
+│   ├── Scenario1/                     ← scenario-specific working folder (one per chosen scenario)
+│   │   ├── build-spec.md              ← reusable prompts for this scenario (Prompt 1 spec, Prompt 2 deck, Prompt 3 build)
+│   │   ├── Output/                    ← generated spec artefacts (e.g. critique-pool-*.md)
+│   │   └── Presentation/              ← generated stakeholder decks (.pptx) and their generator scripts
+│   └── Gate1/                         ← Gate 1 deliverables (populated during gate exercise)
 ```
 
-> Note: Week 2–5 README files (`README-Participants-Week2.md` through `README-Participants-Week5.md`) are expected to exist in `Intro+Week1/` or a sibling folder. If they are missing, flag the gap rather than creating placeholder content.
+> Note: Week 2–5 working areas (`Week2/` through `Week5/`) and their scenario-specific subfolders are expected to appear alongside `Week1/` as the cohort progresses. Weekly participant READMEs for Weeks 2–5 are expected in `SupportingDocs/` following the `README-Participants-Week{N}.md` pattern. If they are missing, flag the gap rather than creating placeholder content.
 
 ## Core Entities (Documentation Domain)
 
@@ -54,7 +56,7 @@ FDE_Training/
 - Rubrics are sealed until the gate begins — **do not invent rubric details** if they are not documented
 
 ### FDE Level Progression
-Defined in `Sources/the-fde.md`:
+Defined in `SupportingDocs/the-fde.md`:
 - **Level 1**: Buildable Specification (single capability, close guidance)
 - **Level 2**: Multi-Capability Systems (3–5 interconnected capabilities, decreasing oversight)
 - **Level 3**: Independent End-to-End Engagement (client-facing, owns full lifecycle)
@@ -90,7 +92,7 @@ Defined in `Sources/the-fde.md`:
 ### What This Agent Should NOT Do
 - Never fabricate gate rubric details — they are intentionally sealed
 - Never add physical calendar dates beyond what is in the source material (dates shift per cohort)
-- Never modify `Sources/the-fde.md` — it is a canonical role definition, not a living doc for editing
+- Never modify `SupportingDocs/the-fde.md` — it is a canonical role definition, not a living doc for editing
 - Never create application code, scripts, or non-markdown files unless explicitly instructed
 - Never remove the "rubrics are sealed" notice from weekly READMEs
 - Never change the calendar convention format (physical date → virtual day in brackets)
@@ -125,6 +127,6 @@ Defined in `Sources/the-fde.md`:
 - Adding new weeks, scenarios, or program structure not in source material
 - Any change to gate deliverable lists
 - Any change to key contacts
-- Any modification to `Sources/the-fde.md`
+- Any modification to `SupportingDocs/the-fde.md`
 - Creating content that will be participant-facing during a live gate
 

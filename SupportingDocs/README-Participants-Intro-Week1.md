@@ -189,7 +189,7 @@ The mapping from physical Monday 20.04 through Friday 24.04 is 1:1 to virtual Mo
 
 You'll first hear about the **Week 1 Practice Scenario Pool** at the program kickoff on the prep day (Fri 17.04). At the Virtual Monday Week 1 orientation (physical Mon 20.04), your coach walks through the 7 scenarios in detail and you pick one by end of that day. You can switch once before the following evening (Virtual Tuesday / physical Tue 21.04, 18:00 CET); after that your scenario is locked. Everything you do for the rest of Week 1 is anchored to your committed scenario.
 
-The 7 scenarios are pre-framed agentic business problems (HR onboarding, vendor contract review, retail returns, community moderation, clinic patient intake, academic journal triage, municipal permit screening). **The full text of all 7 scenarios, selection rules, and guidance on how to work with your chosen scenario is in a separate document: [`README-Participants-Week1-Scenarios.md`](./README-Participants-Week1-Scenarios.md).** You will receive this document alongside the other Week 1 materials on the prep day.
+The 7 scenarios are pre-framed agentic business problems (HR onboarding, vendor contract review, retail returns, community moderation, clinic patient intake, academic journal triage, municipal permit screening). **The full text of all 7 scenarios, selection rules, and guidance on how to work with your chosen scenario is in a separate document: [`README-Participants-Week1-Scenarios.md`](README-Participants-Week1-Scenarios.md).** You will receive this document alongside the other Week 1 materials on the prep day.
 
 ## The closed build loop (required)
 

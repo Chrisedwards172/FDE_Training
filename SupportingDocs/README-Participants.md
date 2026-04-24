@@ -6,8 +6,8 @@ Welcome. The participant-facing documentation is split into **one combined Intro
 
 **Read these first — before Week 1 begins:**
 
-- **[`README-Participants-Intro-Week1.md`](./README-Participants-Intro-Week1.md)** — Start here. Covers: what the program is, the 5-week overview, how the weekly rhythm works, **how to read the calendar (virtual weeks vs physical dates)**, tooling setup (Claude Code via CodeMie, Cursor, GitHub Copilot, Dial), what to do if you run out of credit, key contacts, and everything you need to know for Week 1 (goal, calendar, deliverables, what coaches are looking for).
-- **[`README-Participants-Week1-Scenarios.md`](./README-Participants-Week1-Scenarios.md)** — The 7 Week 1 practice scenarios, selection rules, and how to work with your chosen scenario. You'll pick one at your Virtual Monday orientation and work against it for the whole week.
+- **[`README-Participants-Intro-Week1.md`](README-Participants-Intro-Week1.md)** — Start here. Covers: what the program is, the 5-week overview, how the weekly rhythm works, **how to read the calendar (virtual weeks vs physical dates)**, tooling setup (Claude Code via CodeMie, Cursor, GitHub Copilot, Dial), what to do if you run out of credit, key contacts, and everything you need to know for Week 1 (goal, calendar, deliverables, what coaches are looking for).
+- **[`README-Participants-Week1-Scenarios.md`](README-Participants-Week1-Scenarios.md)** — The 7 Week 1 practice scenarios, selection rules, and how to work with your chosen scenario. You'll pick one at your Virtual Monday orientation and work against it for the whole week.
 
 **Read each of these at the start of the corresponding week:**
 
