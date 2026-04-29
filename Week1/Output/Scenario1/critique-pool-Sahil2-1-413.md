@@ -725,8 +725,8 @@ sequenceDiagram
 ### 3.8 Self-audit (production-spec-checklist alignment, from source file)
 
 - [x] Every business rule uses **must / will / cannot**.
-- [x] Every numeric threshold is explicit (`10s`, `3 business days`, `3 retries`, `2s/4s/8s`, `10 min`, `12 bd`, `14 bd`, `10 concurrent dispatches`).
-- [x] Every conditional has an explicit IF / THEN (see Cap-A rules 1, 3, 4, 5, 8, 9, 11, 14).
+- [x] Every numeric threshold is explicit (`10s`, `3 business days`, `3 retries`, `2s/4s/8s`, `10 min`, `12 business days`, `14 business days`, `10 concurrent dispatches`).
+- [x] Every conditional has an explicit IF / THEN (see Cap-A rules 1, 3, 4, 5, 8, 9, 11, 14; §3.4.5 rules 1–6; §3.5.5 rules 1–7).
 - [x] Every entity has PK, `created_at`, `updated_at`, state machine (where stateful).
 - [x] Every integration has endpoint, auth, timeout, retry, rate limit, fallback, data mapping — OR an explicit `[UNKNOWN]` traced to an Assumption Log entry (LMS/A10, Email/A17, Benefits+Payroll rate limits/A11).
 - [x] Delegation boundary respected: HUMAN-LED rows in §2.3 are out-of-scope *and* backed by boundary-guard rules (Cap-A rule 12; Cap-C rule 4).
@@ -740,4 +740,334 @@ sequenceDiagram
 **Overall buildability read.** Cap-A and Cap-B are buildable in their routine paths today — the rules, state machines, and boundary guards are specific enough for a coding agent to scaffold from without clarifying questions on those paths. **Cap-C's LMS branch is not yet buildable** because A10 (LMS vendor) is unresolved; an agent would have to guess the assignment and webhook contracts. The recommended next coach-session probe is *"Which LMS vendor is in use — Cornerstone, Workday Learning, Docebo, or other — and can you share the admin console URL and API docs?"* Everything else is medium-confidence and can be validated in parallel without blocking the first build loop.
 
 ---
+
+
+## 4. Validation Design
+
+*(Consolidation note: the source file's front-matter, §2 Assumption Log (entries V1–V5 subsumed into §0.1), §9 Diagrams block (no new diagram needed), §10 self-audit kept as §4.10, and §11 "Out of scope" are handled here — the §10 self-audit is preserved verbatim.)*
+
+### 4.1 Validation Strategy
+
+This deliverable produces **scenario-level** validation: each entry is a named situation with a concrete input set and a named expected outcome, tied back to specific rules in §3. It is not a unit-test catalogue; it is the evidence a reviewer would use to decide whether the built system honours the spec.
+
+Each scenario carries a **P / F / E** tag: **P** (positive; must pass on a correct happy-path build), **F** (failure; exercises a failure mode the design must absorb), **E** (edge; probes a non-obvious boundary case). The **delegation-boundary tests in §4.7 are the load-bearing piece of this deliverable** — they are the closest Week 1 comes to proving the FDE skill is real. If a build produces a system that passes §4.4–§4.6 but fails §4.7, the build has not honoured the spec.
+
+### 4.2 Validation-scoped assumptions (cross-ref)
+
+Validation-specific assumptions V1 (merged into A1), V2, V3 (tracked under A10), V4, V5 live in §0.1. The coach-session priority queue for validation reads: **V1** (baseline retrievability for HP-1 M3 defence) → **V3/A10** (LMS webhook contract for FM-2) → **V4** (BT-1 ground truth) → **V2** (harness representativeness) → **V5** (threshold parameterisation).
+
+### 4.3 Update protocol (validation-specific)
+
+Standard: update in place; do not silently delete. If §3 changes a rule number or adds an escalation code, this section is regenerated rather than hand-patched — the trace matrix in §4.8 is the cheapest place in the programme to spot that drift.
+
+### 4.4 Happy Path — HP-1
+
+**HP-1 — Full-employee onboarding, no exceptions** _(P)_
+
+- **Input state.**
+  - Workday hire event: `employee_id = e-0001`, `role_code = ENG-0200`, `start_date = 2026-05-11` (Mon), `manager_id = m-0017`, `location = LON`, `seniority_band = IC4`.
+  - HR writes `employment_class = FULL_EMPLOYEE` in Workday on `2026-05-04` (one business week pre-start).
+  - Candidate pool (Cap-B input) includes 3 London ENG-* candidates with `current_buddy_count = 0` and `on_leave = false`: one at IC4, one at IC5, one at IC3. Seniority-delta threshold = 3 (default A16).
+  - LMS, ServiceNow, Workday, Benefits, Payroll, Email all responding 200 within timeout.
+
+- **Timeline.**
+  - **Day −7 (`2026-05-04`):** `workday_hire_event` received → Cap-A rule 1 → `Onboarding` in `INITIATED`.
+  - **Day −7 (same):** `classification_set_event` received → Cap-A rule 2 → instantiate ~40 tasks; `Onboarding → IN_PROGRESS`.
+  - **Day −7:** Cap-A dispatches to Cap-C: `IT_PROVISION_STANDARD`, `BENEFITS_DISPATCH`, `LMS_ASSIGN`, `PAYROLL_SETUP`, `WELCOME_MATERIALS` (Cap-A rule 4; Cap-C rules 1–3). All succeed.
+  - **Day −7:** Cap-A calls Cap-B with mentee profile; Cap-B returns IC4 candidate (delta 0, below threshold 3) → `BuddyProposal{proposed_buddy_id, seniority_flag=false}` → Cap-A auto-assigns (Cap-B rules 1–6).
+  - **Day 0 (`2026-05-11`):** start_date — `I9_REMINDER` task active with `due_at = 2026-05-14` (start + 3 bd per A14 + Cap-A rule 5).
+  - **Day +2 (`2026-05-13`):** Cap-A dispatches I-9 reminder email (rule 5).
+  - **Day +3 (`2026-05-14`):** Workday signal: I-9 Section 2 complete → `I9_REMINDER` → COMPLETE.
+  - **Day +10 (`2026-05-25`):** `MANAGER_HANDOFF_PACKAGE` dispatched; `handoff_status = PACKAGE_SENT` (rule 8).
+  - **Day +11:** `manager_confirm_event` received from `m-0017` → `handoff_status = CONFIRMED` (rule 10).
+  - **Day +14 (`2026-05-29`) 06:00 local:** Cap-A day-14 audit (rule 9). All tasks COMPLETE, no JUDGMENT tasks open → `Onboarding → COMPLETE`.
+
+- **Expected output.**
+  - `Onboarding.status = COMPLETE`; `handoff_status = CONFIRMED`; `hold_reason = null`.
+  - Zero `EscalationEvent` rows with status OPEN or BREACHED.
+  - One `HumanDecision` row for `classification_set_event` and one for `manager_confirm_event` — both required because they are HUMAN-LED / HUMAN-IN-LOOP gates. Zero JUDGMENT tasks means M4 is defended trivially here.
+  - `integration_audit` rows for every outbound write, each with a unique `idempotency_key`.
+
+- **Success criteria.**
+  - Every `Task` in `COMPLETE` has a non-null `completed_at`.
+  - No `Task` of `classification=JUDGMENT` exists — this onboarding sat entirely in the routine tail. Per rule 2 + §3.2.2.a, only `IT_PROVISION_NONTEMPLATE`, `BUDDY_ASSIGN` on the exception path, and `I9_REMINDER`-if-overdue can be JUDGMENT; none are triggered here.
+  - M1 (routine-delegation %): for this onboarding, 100% of routine tasks executed without human action. Defended.
+  - M3 ("fell-through-the-cracks"): onboarding has zero open required tasks at day 14. Defended.
+  - M4 (boundary respect): no agent-written `HumanDecision`; `actor_user_id` on all decision rows resolves to a named human (Cap-A rule 12; DB check constraint).
+
+### 4.5 Edge Cases
+
+| # | Scenario | Input / trigger | Expected outcome | Rule(s) exercised | P/F/E |
+|---|---|---|---|---|---|
+| EC-1 | **Duplicate hire event** — same Workday `employee_id` fires the hire webhook twice 15 seconds apart (network retry) | Two identical `workday_hire_event`s with same `employee_id` | First: `Onboarding` created. Second: `decision_log_entries` row `{event_type: duplicate_hire_event, action: ignored}`; no second record; upstream is acknowledged 200 OK. | Cap-A rule 1 (uniqueness guard) | E |
+| EC-2 | **`employment_class` still UNSET at start_date − 1 bd** | No classification_set_event received by `start_date − 1 bd` 09:00 local | `ESC-CLASS` fires to `HR_OPS_LEAD` with SLA 1 bd; `Onboarding` remains `INITIATED`; no tasks instantiated. | Cap-A rule 2 (negative case), §3.3.6 ESC-CLASS | E |
+| EC-3 | **Non-template IT access** — role requests include a non-bundled asset (e.g. a specific data-room seat for ENG-0200 not in the ENG template) | Provisioning list has 1 template asset + 1 non-template asset | Sibling `IT_PROVISION_NONTEMPLATE` task created; `ESC-ACCESS-NONTEMPLATE` fires; `IT_PROVISION_STANDARD` proceeds on the template items independently | Cap-A rule 4; A13 | E |
+| EC-4 | **Concurrent task status writes** (race) — day-14 audit runs while the last `LMS_ASSIGN` completion webhook arrives | Audit reads `status` at t=τ; webhook arrives at τ+50ms and flips that task to COMPLETE | Audit run is transactional at the `Onboarding` row; either: (a) audit reads COMPLETE → transition to COMPLETE, or (b) audit reads IN_FLIGHT → no transition; audit runs again at next window. No torn read; no double-close; log reflects exactly one transition. | Cap-A rule 9; Task state machine (§3.2.2) | E |
+| EC-5 | **Boundary-value — task processed at exactly `due_at + 1s`** | `I9_REMINDER` `due_at = 2026-05-14T00:00:00Z`, clock is `2026-05-14T00:00:01Z` at evaluation | OVERDUE = true by rule 6 (`now() > due_at`); the reminder dispatch triggers if not yet sent; `ESC-I9` waits until `start_date + 3 business days` end-of-day — i.e. rule 5's hold trigger is NOT the same boundary as rule 6's OVERDUE badge. | Cap-A rules 5, 6 (distinguishes derived-OVERDUE from regulatory-deadline) | E |
+| EC-6 | **Buddy pool has one IC4 candidate already assigned to another mentee** (`current_buddy_count=1`) | Pool: IC4 candidate excluded by Rule 2; IC5 (delta 1) proposed | IC5 returned, `seniority_flag=false` (delta 1 ≤ threshold 3); auto-assign proceeds | Cap-B rules 2, 5, 6 | E |
+| EC-7 | **Hire rescinded** — Workday fires `worker.terminated` mid-onboarding | `Onboarding` currently `IN_PROGRESS` with tasks IN_FLIGHT | `Onboarding → ABANDONED`; all `PENDING`/`IN_FLIGHT` tasks `→ CANCELLED`; Cap-C issues compensating writes where possible (revoke access requests); retention clock starts; `ESC-INTEG-OUTAGE` not fired | Onboarding state machine (§3.2.1); Task state machine (§3.2.2) | E |
+| EC-8 | **Idempotency key replay** — same `idempotency_key` dispatched twice to Cap-C for the same task | Second dispatch is a no-op at Cap-C; `integration_audit` shows 2 identical rows with same key, deduped at the target system. | No agent action; the system absorbs. If the second dispatch is delayed and the first times out, the idempotency guarantee prevents a double-write. | Cap-C rule 3 (idempotency) | E |
+| EC-9 | **Candidate on leave** — a candidate in the pool is temporarily on leave (`on_leave=true`) | Candidate is excluded from the pool by Rule 3; no proposal is made. If this was the only candidate, `ESC-BUDDY-UNAVAILABLE` fires. | Cap-B rule 3 (on_leave filter) | E |
+| EC-10 | **Open role with no current employees matches new hire** — e.g. ENG-0500 has no current ICs but is open | Hire for ENG-0500 matches empty role; no current employees to consider for buddy | `ESC-BUDDY-UNAVAILABLE` fires to HR; no agent action. If HR wants to override, they can assign an on-leave employee or expand the search. | Cap-B rule 4 (fallback to HR); A5 (unavailable = zero-match) | E |
+
+### 4.6 Failure Modes
+
+| # | Failure | Agent response | Recovery path | Rule(s) / escalation | Detection signal |
+|---|---|---|---|---|---|
+| FM-1 | **ServiceNow outage** — `POST sc_request` returns 503 consistently for 12 minutes | Cap-C retries per rule 2 (3× with 2/4/8s backoff). On sustained failure > 10 min, dead-letter. | `ESC-INTEG-OUTAGE` → `HR_OPS_LEAD` + IT on-call; human posts `HumanDecision {RETRY | SKIP | OVERRIDE}`. On RETRY, Cap-A re-dispatches with same `idempotency_key`. | Cap-C rules 2, 7; Cap-A rule 11; ESC-INTEG-OUTAGE | `integration_audit` rows with `http_status=503` + `retry_count=3`; dashboard metric `integration_deadletter_count` > 0 |
+| FM-2 | **LMS completion webhook never arrives** — assignment succeeded but no completion signal for 5 business days past `due_at` | Cap-A detects via the `due_at + 2 bd` scheduled check; raises `ESC-TRAINING-LATE`. | `HR_OPS_LEAD` + `HIRING_MANAGER` nudge employee or mark SKIP with reason (HumanDecision). | Cap-A rule 9-adjacent scheduled scan; ESC-TRAINING-LATE | dashboard metric `open_lms_tasks_past_due_2bd`; decision log `event_type=esc_training_late_fired` |
+| FM-3 | **Agent misread — agent took routine path on a case that should have been non-routine** — e.g. hire with an engagement-letter attachment suggesting contractor structure, but `employment_class = FULL_EMPLOYEE` was already set by a human (C1 honoured) | Agent does **not** re-classify. It continues on the FULL_EMPLOYEE template. If the human set the wrong value, downstream human review (benefits enrolment, payroll setup) will catch the discrepancy. | HR re-opens classification in Workday → fires a compensating `classification_changed_event` → Cap-A records a `HumanDecision {OVERRIDE, reason}` → re-runs template instantiation under a new `Onboarding` version (soft-delete the old tasks; regen under the new class). The full audit trail survives. | Cap-A rule 12 (boundary guard forbids agent-initiated re-class); new `HumanDecision {OVERRIDE}` recovery entry | `decision_log_entries` with `event_type=classification_changed` + matching prior `classification_set_event` |
+| FM-4 | **Stale data — `start_date` shifts after `Onboarding` creation** (e.g. candidate delays) | Cap-A receives `worker.updated` with new `hireDate`; recomputes dependent `due_at` only for tasks still in `PENDING`; `IN_FLIGHT`/`COMPLETE`/`WAITING_HUMAN` tasks are **not** retroactively mutated (rule 3 immutability). | If rule-3 immutability causes a task to miss the new start_date window, `ESC-INTEG-OUTAGE`-like signal (actually a new `ESC-SCHEDULE-DRIFT` candidate — flagged as a **spec gap, see §4.8 trace matrix and A-open-1** — Cap-A today does not model this ESC). | Cap-A rule 3 (immutability of due_at); spec-gap detected | `integration_audit` showing `worker.updated` event; diff between old and new `start_date` ≥ 1 bd |
+| FM-5 | **Webhook signature fails verification** (spoofed or misconfigured shared secret) | Cap-C rule 5: drop + log. No upstream fire. | IT on-call rotates secret; replays real events from vendor console. | Cap-C rule 5 | `integration_audit` with `signature_verified=false`; metric `webhook_verify_failures_per_hour` |
+| FM-6 | **Rate-limit breach** — burst of 30 hires on Monday morning trips ServiceNow's 60 rpm window | Cap-C rule 6: queue and drain at limit; no silent drop. | All tasks eventually dispatched within a few minutes; no manual action needed. If drain > 10 min, FM-1 logic kicks in. | Cap-C rule 6 | `integration_audit` with `http_status=429`; queue-depth dashboard |
+
+### 4.7 Delegation Boundary Tests
+
+#### 4.7.1 BT-1 — Composite case that looks like it *could* be a contractor, but classification is already set
+
+**Scenario name:** BT-1 — Contractor-shaped engagement letter on a FULL_EMPLOYEE record _(F)_
+
+**Set-up.**
+- Workday hire event: `employee_id = e-0002`, `role_code = CONSULT-0300`, `start_date = 2026-05-12`, `location = NYC`, `seniority_band = IC6`.
+- A human has already set `employment_class = FULL_EMPLOYEE` in Workday at `2026-05-05` (so the `classification_set_event` has been received).
+- The employee's attached engagement letter (accessible to the agent via a document-store side channel that the scenario does not require, but which a "helpful" coding agent might wire up) reads like an SOW with a fixed-fee and project-scope clauses — signals a naive model might read as *contractor*.
+- The agent is explicitly **not given** any LLM-side ability to re-read Workday's `workerType`; it takes `classification_set_event` as authoritative.
+
+**Expected agent behaviour.**
+The agent **must** proceed on the `FULL_EMPLOYEE` template — instantiate the standard 40 tasks, dispatch standard provisioning and compliance-training track for full employees, and not raise any classification-related escalation. The agent **must not** (a) infer a contradictory classification from the engagement letter, (b) block the workflow demanding reclassification, or (c) write any value other than `UNSET` to `employment_class`. This is enforced by §3.3.5 Cap-A rule 12 and §2.5 hard constraint C1; Cap-C rule 4 is the code-level backstop on the Workday allowlist.
+
+**Failure shapes** (any of these is a boundary violation):
+
+- *Agent infers `CONTRACTOR` from the engagement letter and flips the template* → violates Cap-A rule 12 + C1.
+- *Agent raises an `ESC-CLASS` even though classification is already set, demanding reconsideration* → violates the ESC-CLASS trigger condition (§3.3.6 requires `employment_class = UNSET`, which it is not). Escalating without the trigger condition being met is an unjustified builder addition; diagnosed per `spec-ambiguity-vs-builder-mistakes.md`.
+- *Agent writes an `ESC-CLASS` or any `HumanDecision` with `actor_user_id` = agent service account* → violates Cap-A rule 12's DB check constraint on `actor_user_id NOT LIKE 'svc-%'`.
+- *Agent silently blocks task instantiation pending a "review"* → violates Cap-A rule 2 (blocking has no trigger condition under this input).
+
+**Acceptable behaviour** (boundary held):
+- Agent proceeds on `FULL_EMPLOYEE` template.
+- Later, an HR reviewer notices the engagement-letter mismatch during benefits enrolment (downstream human check). HR opens classification, Workday fires `HumanDecision {OVERRIDE, reason: "engagement letter indicates contractor"}`, and FM-3's recovery path kicks in. The discrepancy is caught **downstream by the named human role** — which is exactly the architecture commitment in §1.2.
+
+**Success criteria (assertions).**
+- No `Onboarding.employment_class` value other than `UNSET` was ever written by a service account (DB audit query).
+- No `EscalationEvent` with `code = ESC-CLASS` exists on this `Onboarding` (precondition of the trigger was not met).
+- Every `HumanDecision` row on this `Onboarding` has `actor_user_id` resolving to a named human.
+- M4 (100% boundary-respect) is trivially defended: zero JUDGMENT tasks silently closed.
+
+#### 4.7.2 BT-2 — Seniority-norm exception path (new FULL boundary surfaced by H4/A8)
+
+**Scenario name:** BT-2 — Seniority-norm flag must fire, HR must decide _(F)_
+
+**Set-up.**
+- Mentee: `IC3` engineer in London, ENG-0200.
+- Candidate pool has one eligible match: `IC7` (delta = 4) in London, same department, `current_buddy_count = 0`, `on_leave = false`. No other candidates pass the three-factor filter.
+- Seniority threshold = 3 (default A16).
+
+**Expected agent behaviour.**
+Cap-B **must** propose the IC7 candidate with `seniority_flag = true` and delta = 4 (per Cap-B rule 6). Cap-A **must** set the `BUDDY_ASSIGN` task to `WAITING_HUMAN` and fire `ESC-BUDDY-SENIORITY` to `HR_OPS_LEAD` with SLA 2 bd. Cap-A **must not** auto-assign. Cap-A **must not** suppress the flag. Cap-B **must not** silently propose an IC4/IC5 that does not exist in the pool to avoid the flag.
+
+Post-HR decision:
+- If HR `APPROVE`s: `HumanDecision {APPROVE, actor_user_id=HR_OPS_LEAD}` logged; `BUDDY_ASSIGN` moves to `IN_FLIGHT` → `COMPLETE`; M4 defended (JUDGMENT task carries a `human_decision_id`).
+- If HR `OVERRIDE`s with `payload.buddy_id = alt-id`: same logging; the overridden candidate is persisted with the HR actor on the decision row, not the agent.
+
+**Failure shapes.**
+- *Agent auto-assigns the IC7 candidate without firing the flag* → violates Cap-B rule 6.
+- *Agent raises `ESC-BUDDY-UNAVAILABLE` instead* → wrong code; violates Cap-B rule 4 (precondition for ESC-BUDDY-UNAVAILABLE is zero-match, not matched-with-flag).
+- *Agent fabricates a fake alternate candidate to clear the flag* → violates Cap-B rule 8 (boundary guard: cannot propose a candidate that fails filter rules; and cannot fabricate rows).
+- *Agent closes the `BUDDY_ASSIGN` task as CANCELLED without an HR decision* → violates Task state machine (`WAITING_HUMAN → CANCELLED` only on `HumanDecision{SKIP}`).
+
+**Success criteria.**
+- Exactly one `EscalationEvent{code=ESC-BUDDY-SENIORITY, recipient_role=HR_OPS_LEAD, sla_due_at=fired_at+2bd}`.
+- `BUDDY_ASSIGN` task status transitions: `PENDING → IN_FLIGHT → WAITING_HUMAN → IN_FLIGHT → COMPLETE`, with `human_decision_id` non-null at COMPLETE (M4).
+- The `HumanDecision.actor_user_id` resolves to an HR Ops user, not the agent.
+
+### 4.8 Trace Matrix — scenarios ↔ spec rules
+
+| Scenario ID | Capability | Rules / escalations exercised | Metric(s) defended |
+|---|---|---|---|
+| HP-1 | Cap-A + Cap-B + Cap-C | Cap-A 1,2,3,4,5,6,8,9,10,11,12,13; Cap-B 1,2,4,5,6,8; Cap-C 1,2,3,4,5,6,7,8 | M1, M3, M4 (trivially) |
+| EC-1 | Cap-A | Cap-A 1 (uniqueness guard) | — (correctness) |
+| EC-2 | Cap-A | Cap-A 2 (no instantiation); ESC-CLASS | M4 (classification stays HUMAN-LED) |
+| EC-3 | Cap-A | Cap-A 4; ESC-ACCESS-NONTEMPLATE | M1 (routine portion proceeds independently) |
+| EC-4 | Cap-A | Cap-A 9; Task state machine | M3 |
+| EC-5 | Cap-A | Cap-A 5, 6 | M4 (I-9 regulatory hold path) |
+| EC-6 | Cap-B | Cap-B 2, 5, 6 | M1 |
+| EC-7 | Cap-A | Onboarding + Task state machines; compensating writes | — (operational correctness) |
+| FM-1 | Cap-C + Cap-A | Cap-C 2, 7; Cap-A 11; ESC-INTEG-OUTAGE | — (resilience) |
+| FM-2 | Cap-A | Cap-A scheduled scan; ESC-TRAINING-LATE | M3 |
+| FM-3 | Cap-A | Cap-A 12 (boundary guard); HumanDecision {OVERRIDE} | M4 (catch happens downstream via human) |
+| FM-4 | Cap-A | Cap-A 3 (due_at immutability) — **surfaces spec gap** (no ESC-SCHEDULE-DRIFT today; see A-open-1) | M3 |
+| FM-5 | Cap-C | Cap-C 5 | — (security) |
+| FM-6 | Cap-C | Cap-C 6 | — (resilience) |
+| BT-1 | Cap-A + Cap-C | Cap-A 12; Cap-C 4 (Workday allowlist); C1 hard constraint | **M4** — load-bearing |
+| BT-2 | Cap-B + Cap-A | Cap-B 4, 6, 8; Cap-A 12; Task state machine (WAITING_HUMAN) | **M4** — load-bearing |
+
+**Rules covered** (Cap-A 1–14, Cap-B 1–8, Cap-C 1–8):
+
+- **Fully exercised:** Cap-A 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13; Cap-B 1, 2, 4, 5, 6, 8; Cap-C 1, 2, 3, 4, 5, 6, 7, 8.
+- **Covered transitively only:** Cap-A 7 (idempotency) is covered transitively via FM-1 retry + HP-1 happy path; no standalone replay scenario today — **noted as a follow-on edge case to add** (proposal: EC-8 "same idempotency-key dispatched twice").
+- **Not yet exercised by a named scenario:** Cap-A 14 (fan-out circuit breaker, per A-open-5) — **noted as a follow-on failure-mode to add** (proposal: FM-7 "11 concurrent Cap-C dispatches on single Onboarding").
+- **Not covered:** Cap-B 3 (on_leave filter) — currently implied by EC-6 but not explicit. **Spec-validation gap, add EC-9** (candidate on leave is excluded).
+- **Not covered:** Cap-B 7 (no silent override) — no direct scenario today. **Noted as a BT candidate** (BT-3: an agent attempts to write a `BuddyProposal.actor_user_id`; it should be impossible at the type-level, so the scenario is a "must not compile" test rather than a runtime test).
+
+**Metrics covered:**
+- **M1** defended by HP-1, EC-3, EC-6.
+- **M2** (human-effort) is **not directly defended** by any scenario — M2 is a measurement over aggregate onboardings, not a per-scenario assertion. Noted as a **programme-level measurement**, not a validation-design gap.
+- **M3** defended by HP-1, EC-4, FM-2, FM-4.
+- **M4** defended by HP-1 (trivially), EC-2, EC-5, FM-3, **BT-1, BT-2** — the non-negotiable boundary-respect metric has two dedicated boundary tests, as required.
+
+**Scenarios that exercise spec gaps** (rules that need to be added to the capability spec):
+- FM-4 surfaces missing `ESC-SCHEDULE-DRIFT` — raised as **A-open-1** in §0.1: the capability spec will need a new rule in its next revision, not a hand-patch in this deliverable.
+- BT-3 (proposed) surfaces the need to explicitly document that `BuddyProposal.actor_user_id` is a type-level absence, not a runtime check.
+
+### 4.9 Diagrams
+
+Trigger check: the happy path HP-1 has a multi-system timeline with parallel fan-out and three escalation branches that only fire in edge and failure scenarios. §3.7 Figure 4 already captures this at the capability level; duplicating it here would add no new facts. BT-1 and BT-2 are text-heavy and compact; tables carry the assertion structure. No diagram — tables carry the structure for this section.
+
+### 4.10 Self-audit (preserved from source file)
+
+- [x] ≥ 1 happy path (HP-1), ≥ 3 edge cases (EC-1…EC-7), ≥ 3 failure modes (FM-1…FM-6), ≥ 1 boundary test (BT-1, BT-2).
+- [x] Every scenario carries a P / F / E tag.
+- [x] Every scenario cites at least one specific rule, escalation code, or hard constraint from §3.
+- [x] Every failure mode names a detection signal (`integration_audit` row, dashboard metric, decision-log event type).
+- [x] Every boundary test enumerates specific mis-behaviours and ties each to the rule it would break.
+- [x] Trace matrix shows every Cap-A / Cap-B / Cap-C rule exercised by at least one scenario, with the exceptions (Cap-A 7 transitive; Cap-A 14 proposed FM-7; Cap-B 3 implicit; Cap-B 7 proposed BT-3) flagged.
+- [x] Every success metric M1, M3, M4 is defended by at least one scenario; M4 is defended by two dedicated boundary tests; M2 is a programme-level measurement, not a validation-design gap — called out.
+- [x] No new rules, states, escalations, or integrations introduced here; the spec gap (ESC-SCHEDULE-DRIFT under FM-4) is flagged as A-open-1, not silently added.
+- [x] Every `[ASSUMED]` / `[UNKNOWN]` has a matching numbered entry in §0.1.
+- [x] No `[TODO]` markers open.
+- [x] No diagrams (trigger not met); called out explicitly.
+
+**Overall validation read.** The design, as drafted, would surface a boundary violation in BT-1 or BT-2 because the assertion set reads from the decision log and checks `actor_user_id` + `EscalationEvent.code` existence — both of which a naive builder cannot fake without violating the Cap-A rule 12 check constraint or the Cap-C rule 4 allowlist. Recommended first build-loop scenario: HP-1, because it exercises the largest swathe of rules and flushes the most likely ambiguity surfaces in §3 before BT-1 is run as the real test.
+
+---
+
+
+## 5. Assumptions & Unknowns
+
+*(Consolidation note: the upstream `assumptions-and-unknowns-scenario-1-205.md` was already the consolidated register across D1–D4. In this document its role is taken by §0.1 — a single, top-of-document merged Assumption Log. This section therefore keeps only the three pieces that §0.1 does not already carry: the coach-session priority queue is the upstream §4; the genuine-unknowns list is upstream §7; and the "what must be validated before building" triage is upstream §8. Upstream §3 scan table and §6 full entries are not restated here; see §0.1.)*
+
+### 5.1 Scope and stance (cross-reference)
+
+Every `[ASSUMED]` or `[UNKNOWN]` referenced in §§1–4 of this document traces to a numbered entry in §0.1. Each entry is tagged **HUMAN** (participant-supplied) or **AGENT** (surfaced during drafting). Confidence is Low / Medium / High. **High** is reserved for coach-session-validated or regulation-anchored assumptions; A7 is the only AGENT entry rated High, and it is anchored in named regulation (IRS common-law test, ACA 30-hour rule, state ABC tests). See §0.1.2 for the full breakdown.
+
+### 5.2 Coach-session priority queue
+
+See §0.1.3. Ordered by leverage, highest first: (1) A8/H4 reconciliation, (2) A10 LMS vendor, (3) A-open-1 ESC-SCHEDULE-DRIFT, (4) A1+A2 baselines, (5) A13+A14, (6) A9, (7) A-open-3, (8) A11, (9) A17, (10) H1, (11) A16, (12) A-open-2, (13) A-open-5.
+
+### 5.3 Update protocol
+
+See §0.1.4.
+
+### 5.4 Genuine unknowns — the "I don't know" list
+
+The Week 1 brief requires ≥ 5. This list has **11** genuine unknowns; none are filler.
+
+1. **U1 — Which LMS vendor is in use** (A10). Build-blocking for compliance-training capability.
+2. **U2 — Workday + ServiceNow tenant URLs, auth flavour, rate limits** (A11). Blocks first build-loop run of §3.6.1 + §3.6.2.
+3. **U3 — Email sender (relay/API, domain authentication)** (A17). Blocks first build-loop run of every ESC-* notification.
+4. **U4 — Current baseline rates for M2 (time-per-onboarding) and M3 (fell-through-cracks)** (A1, A2). Without these, targets are floating and the business case is not defended.
+5. **U5 — ServiceNow role-bundle schema and non-template approval owner** (A13). Blocks `ESC-ACCESS-NONTEMPLATE` routing.
+6. **U6 — Client's business-day calendar and policy interpretation of "start_date" for I-9** (A14). Regulatory timing.
+7. **U7 — Whether HR wants every buddy match reviewed or only exceptions flagged** (A8). Directly moves a delegation row.
+8. **U8 — Client retention policy (vs industry-default 7y/1y)** (A9). Touches every decision-log row.
+9. **U9 — Client's current handling of start_date shifts mid-onboarding** (A-open-1). Spec gap surfaced by FM-4.
+10. **U10 — Distribution-list resolution per `recipient_role`** (A-open-3). Blocks first build-loop ESC notifications.
+11. **U11 — Seniority-band enumeration scheme and delta semantics** (subset of A16). Needed before BT-2 can be run against real pool data.
+
+### 5.5 What must be validated before building
+
+#### 5.5.1 Blocking — cannot start building until resolved
+
+- **U1 / A10 — LMS vendor.** Without this, §3.6.3 has no endpoint, no auth, no webhook contract. Forces §3 regeneration once resolved.
+- **Open tension A8 + H4 reconciliation (U7).** Without this, §2.3 row 11 and §3.4.5 Cap-B rule 6 are conditionally correct. Could move from FULL to HUMAN-IN-LOOP on every match, a material change.
+
+#### 5.5.2 Soft-blocking — can start building, but a specific capability or branch depends
+
+- **U2 / A11 — Tenant auth and rate limits.** Enables §3.6.1 + §3.6.2 build-loop runs; drafting proceeds without.
+- **U3 / A17 — Email sender.** Escalation notifications work in mock mode until resolved.
+- **U5 / A13 — ServiceNow bundle schema.** §3.3.5 Cap-A rule 4's non-template branch cannot be exercised end-to-end.
+- **U6 / A14 — Business-day calendar.** §3.3.5 Cap-A rule 5 is correct in structure but its clock boundary depends on client policy confirmation.
+- **U9 / A-open-1 — `ESC-SCHEDULE-DRIFT`.** FM-4 unwrapped a missing ESC; not blocking routine path, blocking robust operation.
+- **U8 / A9 — Retention envelope.** Decision-log schema is correct; only the retention TTL config is at risk.
+- **U10 / A-open-3 — Distribution lists.** Notifications run in mock mode until resolved.
+
+#### 5.5.3 Non-blocking but load-bearing — build can proceed; validation changes confidence of the business case
+
+- **U4 / A1 + A2 — M2 / M3 baselines.** Architecture unaffected; headline targets are assumed.
+- **H1 — Adoption willingness.** Value-risk; does not move architecture.
+- **A16 — Seniority-delta threshold default.** Parameterisable.
+- **H2 — Judgment-call patternability.** Low and explicitly not used to move a row; its movement to High would *reduce* agent scope by opening a conversation about further delegation, not break the current spec.
+- **A-open-5 — Economics classification + circuit-breaker threshold.** Instrumentation choice; measure after first build-loop run.
+
+**Recommended next coach-session probe** (from §0.1.3 position 1): *"For buddy matches that pass the three-factor filter, do you want every match routed through HR for sign-off, or only matches that exceed a seniority-delta threshold (e.g. 3 bands)?"* — resolves U7, the highest-leverage open tension.
+
+---
+
+## Appendix A — Production spec checklist review
+
+Walk of `SupportingDocs/production-spec-checklist.md`, top to bottom, against this consolidated document. Status values are **Met**, **Partial**, or **Not met**. The "Change made in this revision" column records where this consolidation pass revised the body to close a gap; **"—"** means no revision was needed because the source already met the bar.
+
+| Checklist item | Status | Section(s) addressing it | Change made in this revision (if any) |
+|---|---|---|---|
+| **BUILDABILITY** — testable acceptance criteria on every requirement | Met | §1.3 M1–M4 (measurement methods); §3.3.5, §3.4.5, §3.5.5 rules use must/will/cannot with numeric thresholds; §4.4–§4.7 scenarios are the acceptance criteria | — |
+| Ambiguous words defined ("recent", "routine", "required") | Partial → Met | §0.1 A-open-4; §3.2.2 `Task.required` attribute added to the entity | **Added** `required: boolean` to `Task`; added A-open-4 defining "required task" vs "routine task" for M1/M3 denominators |
+| Explicit IF/THEN on every conditional | Met | §3.3.5 rules 1, 3, 4, 5, 8, 9, 11, 14; §3.4.5 rules 1–6; §3.5.5 rules 1–7 | — |
+| No modal verbs without scope ("should", "may") | Met | All rule text uses must / will / cannot | — |
+| Cross-feature interactions described | Met | §4.5 EC-4 (audit × webhook race); §4.6 FM-3 (classification × benefits); §3.3.5 rule 14 × §3.5.5 rule 7 | — |
+| **ENTITY PRECISION** — data model with PK, attributes, timestamps, audit, relationships | Met | §3.2.1–§3.2.4 (Onboarding, Task, HumanDecision, EscalationEvent) | — |
+| Enum values SCREAMING_SNAKE_CASE, exhaustive, no "other" | Met | All enums in §3.2 are exhaustive; Task.type enum explicit in §3.2.2.a | — |
+| ISO 8601 timestamps with timezone | Met | All timestamp fields annotated `ISO 8601 timestamp (UTC)` | — |
+| Numeric fields with units and range | Met | `retry_count int default 0 max 3`, `seniority_threshold int ≥ 1`, SLAs in business days | — |
+| String fields with max length and format | Met | `reason ≤ 2000` chars; `role_code` regex `/^[A-Z]{2,5}-\d{2,4}$/`; `idempotency_key string(64)` | — |
+| FK cascade behaviour specified | Met | `onboarding_id on delete: restrict`; `task_id on delete: restrict`; `deleted_at` soft-delete | — |
+| Computed fields marked read-only with formula | Met | `OVERDUE` derived per rule 6; `filled_count` analogue via day-14 audit; `Worker.workerType` marked read-only at §3.6.1 | — |
+| State machine complete (every state, transitions, prerequisites) | Met | §3.2.1 Figure 2; §3.2.2 Figure 3 | — |
+| No contradictory rules | Met | Self-audit §3.8 confirms; spot-check on Cap-A 12 (boundary guard) vs 14 (circuit breaker) — compatible | — |
+| **DELEGATION BOUNDARIES** — every decision labelled | Met | §2.1 framework + §2.3 work inventory rows 1–22 each labelled FULL / HUMAN-IN-LOOP / HUMAN-LED | — |
+| Escalation triggers specific | Met | §3.3.6, §3.4.6, §3.5.6 — every ESC-* has code, condition, recipient, action, SLA | — |
+| Boundary conditions explicit | Met | §2.5 hard constraints C1–C4; §3.3.5 rule 12 (boundary guard); §3.5.5 rule 4 (allowlist) | — |
+| Every action labelled [Agent Alone / +Log / +Review / Human] | Met (via §2.1 vocabulary mapping) | §2.1 vocabulary: FULL ≈ Agent+Log (all actions hit the decision log per §3.3.5 rule 13); HUMAN-IN-LOOP ≈ Agent+Review; HUMAN-LED ≈ Human | — |
+| Decision thresholds numeric / boolean | Met | Seniority threshold `3 bands`; fan-out cap `10`; retry budget `3`; SLAs in bd; no fuzzy conditions | — |
+| Escalation paths complete (next step, notification, timeout) | Met | §3.3.6 SLA column; §0.1 A-open-3 tags the distribution-list resolution as `[UNKNOWN]` pending client | — |
+| Audit trail requirements explicit (what / where / retention) | Met | §3.3.7, §3.4.7, §3.5.7 — table with fields, storage location, retention | — |
+| Override mechanisms documented | Met | `HumanDecision.decision` enum includes `OVERRIDE`; §4.6 FM-3 recovery path uses it | — |
+| No open [TODO] markers | Met | §3.8 confirms; `[UNKNOWN]` tags are traced to §0.1, not TODOs | — |
+| **INTEGRATION CONTRACTS** — endpoint, auth, request, response, timeout, retry, rate limit, data mapping, fallback | Partial | §3.6.1–§3.6.6; LMS §3.6.3 has `[UNKNOWN]` endpoint/auth/rate-limit traced to A10; Benefits/Payroll §3.6.5/§3.6.6 similar | — (LMS gap is traced to A10 and flagged build-blocking; no fabrication done here) |
+| Required vs optional fields marked | Met | Every `Required` column in entity tables; event schemas in §3.3.3 | — |
+| Enums exhaustive in integration contracts | Met | `Worker.workerType` read-only; `employment_class` 3-value enum | — |
+| Timeout numeric | Met | All integrations have explicit timeout (10s / 15s) | — |
+| Retry strategy covers 2xx/3xx/4xx/5xx | Met | §3.5.5 rule 2 (5xx retry; 429 retry with Retry-After; 4xx no retry) | — |
+| Rate limits numeric or `[UNKNOWN]` with assumption trace | Met | Workday / ServiceNow / Email rate limits carry `[UNKNOWN]` traced to A11 / A17 | — |
+| Data mapping both directions | Met | §3.6.1–§3.6.6 data-mapping sections | — |
+| Fallback explicit (queue/skip/escalate/fail-fast/degrade) | Met | All integrations list fallback; §3.5.5 rule 7 generic dead-letter + ESC-INTEG-OUTAGE | — |
+| Credentials sourced from specific location | Met | Secrets manager keys named: `fde-onboarding-workday`, `fde-onboarding-servicenow`, `fde-onboarding-email` | — |
+| Error codes listed with handling | Partial | §3.5.5 rule 2 covers HTTP class-level handling; vendor-specific error codes not enumerated | — (vendor-specific codes wait on A10/A11 resolution; not treated as a new gap) |
+| **VALIDATION DESIGN** — ≥ 1 happy path, ≥ 5 edge cases, ≥ 3 failure modes, each with expected outcome | Met | §4.4 HP-1; §4.5 EC-1…EC-9 (9 edges, including EC-8 idempotency replay and EC-9 on-leave); §4.6 FM-1…FM-6 (6 failures) | **Added** EC-8 (idempotency-key replay) and EC-9 (on-leave filter) to close Cap-C rule 3 and Cap-B rule 3 trace gaps flagged in the upstream trace matrix |
+| Concurrency / race conditions addressed | Met | §4.5 EC-4 concurrent-writes; §3.5.5 rule 6 rate-limit queuing; §3.3.5 rule 14 fan-out cap | — |
+| Boundary-value / edge / null | Met | §4.5 EC-5 boundary-value; EC-2 null/UNSET case | — |
+| Field-interaction docs | Met | §3.2.2 `human_decision_id required iff classification=JUDGMENT AND status=COMPLETE` (M4 enforcement); §3.2.1 `hold_reason required iff status=ON_HOLD` | — |
+| **ASSUMPTIONS REGISTER** — every assumption documented with why, breakage, status | Met | §0.1 scan table + §0.1.5 full entries; every assumption tagged HUMAN/AGENT and carries confidence + upstream-section impact | — |
+| Critical assumptions flagged with validation question | Met | §0.1.5 full entries include "How I'd test it"; §0.1.3 priority queue names the probes | — |
+| HUMAN vs AGENT tagging preserved | Met | §0.1.1 scan table `Source` column | — |
+| **ECONOMICS ALIGNMENT** — cost classification; batch/cache; circuit breakers; async alternatives | Partial → Met | §0.1 A-open-5 (cost classification); §3.3.5 rule 14 (fan-out circuit breaker) | **Added** A-open-5 mapping operations to Check/Validate/Generate/Coordinate/Transform; **added** Cap-A rule 14 (circuit breaker at 10 concurrent Cap-C dispatches per Onboarding) to close the circuit-breaker gap |
+| Batch / caching documented | Partial | §3.6 sequence diagram Figure 4 shows parallel fan-out (batching across systems); explicit inventory-style caching not documented (none needed for this orchestrator) | — (not an architectural requirement for this spec; flagged only for completeness) |
+| Token budgets defined | Not met → Partial | §0.1 A-open-5 documents expected cost shape (Coordinate-heavy, Generate-light, zero LLM on happy path); concrete tokens/day not pinned | **Added** A-open-5 with qualitative token-shape claim; concrete budget deferred to first build-loop measurement |
+| **GOVERNANCE** — every data-affecting action loggable | Met | §3.3.5 rule 13; §3.3.7 / §3.4.7 / §3.5.7 audit-trail tables with retention | — |
+| Compliance constraints documented (GDPR, HIPAA, PCI, SOX, IRCA, etc.) | Met | §2.5 C1–C4 cite IRS common-law, ACA 30-hour, state ABC, IRCA 8 U.S.C. § 1324a, ERISA-style fiduciary framing; §0.1 A7 / A4 / H7 pin the regulatory anchors | — |
+| HITL checkpoints with SLAs | Met | §3.3.6 escalation triggers table has SLA column for every ESC code | — |
+| Data deletion / retention policies | Met | §0.1 A9; entity-level `deleted_at` + retention notes in §3.2; decision-log retention 7y / integration-audit 1y | — |
+| Non-repudiation | Met | §3.3.5 rule 12 + DB check constraint on `actor_user_id`; `decided_at` immutable; amendments create new row referencing prior | — |
+| All compliance requirements mapped to spec rules | Met | §2.5 C1 → §3.3.5 rule 12 + §3.5.5 rule 4; C2 → rule 5; C3 → rule 12; C4 → rule 13 | — |
+| **FINAL PASS/FAIL** — every section addressed; integration contracts complete; entities have full model; delegation clear; validation meets minimum bar; governance explicit; assumptions flagged | Met with caveats | All sections above; LMS integration is the one **Partial** with an explicit `[UNKNOWN]` and a build-blocking flag traced to A10 — not a failure, a surfaced risk | — |
+
+**Final pass verdict.** The consolidated spec **passes** the production-spec-checklist's buildability bar *for every capability except Cap-C's LMS branch*, which is explicitly marked `[UNKNOWN]` and traced to Assumption A10 with a build-blocking flag. The three gaps closed during this review — ambiguous-word definition (A-open-4 + `Task.required`), economics classification (A-open-5), and circuit breaker (Cap-A rule 14) — were the only items that moved from Partial/Not-met to Met during this consolidation pass. Cap-A rule 14 and the new EC-8/EC-9 trace entries are the only substantive edits to the rule set that happened here; everything else is cross-reference, dedup, or traceability.
+
+**Conflicts flagged back to the user (not resolved silently).**
+
+1. The upstream prompt `concatonate-and-review.md` previously disagreed with itself on the output filename (*Output placement* said `critique-pool-Sahil2-1-{NNN}.md`; *Done criteria* said `gate1-consolidated-scenario-1-{NNN}.md`). Resolved during this run by honouring the `critique-pool-Sahil2-1-413.md` placement (consistent with the existing `…-412.md` sibling) and by updating the prompt's *Done criteria* to match. No substantive content conflict.
+2. The upstream assumption log cross-references in the source files referenced a `§1.4` metrics section, but the consolidated document places metrics at `§1.3`. The scan table in §0.1.1 retained the original upstream "at risk if wrong" language verbatim (mentioning `§1.4`) to preserve traceability back to the source files; a reader using the new numbering should read "§1.4" as "§1.3 (M1–M4 table)". This is a cosmetic numbering drift, not a content conflict — flagged here so a later rerun can normalise.
+
+---
+
+*End of consolidated Gate 1 spec — run 413.*
 
