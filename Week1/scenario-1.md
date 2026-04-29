@@ -1,6 +1,6 @@
 # Scenario 1 — HR Onboarding Coordination
 
-> Extracted from [`SupportingDocs/README-Participants-Week1-Scenarios.md`](../SupportingDocs/README-Participants-Week1-Scenarios.md) for reuse across Week 1 prompts. The scenario text below is verbatim; the HUMAN assumptions that follow are the participant-supplied assumptions lifted from [`../Scenario1/build-spec.md`](../Scenario1/build-spec.md).
+> Extracted from [`SupportingDocs/README-Participants-Week1-Scenarios.md`](SupportingDocs/README-Participants-Week1-Scenarios.md) for reuse across Week 1 prompts. The scenario text below is verbatim; the HUMAN assumptions that follow are the participant-supplied assumptions lifted from [`../Scenario1/build-spec.md`](../Scenario1/build-spec.md).
 
 ---
 
