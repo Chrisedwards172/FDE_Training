@@ -29,13 +29,15 @@ The OPC is an AI agent that ensures every new hire at Aldridge & Sykes has corre
 
 | System | Access | Status | Constraints |
 |--------|--------|--------|-------------|
-| **Workday** | REST API (Read; Write for sync) | ✅ Available | Not real-time — tracker is the live source during active onboarding. Write only for end-of-week sync. |
-| **ServiceNow** | REST API (Read/Write) | ✅ Available | Routing rules owned by IT — OPC can modify tickets but not routing configuration. Priority resets above P3→P1 require human approval. |
-| **Master Tracker** | Microsoft Graph API (Read/Write Excel on OneDrive) | ⚠️ Available but fragile | No schema enforcement. Hidden columns (risk flags, notes) contain critical context. Column positions may shift if Priya reformats. |
-| **Outlook** | Microsoft Graph API (Read/Send) | ✅ Available | Sends from service account or drafts for Priya's approval. Stakeholders expect emails from Priya — agent-sent emails may reduce urgency perception. |
+| **Workday** | REST API (Read; Write for sync) | ✅ Available | Not real-time — tracker is the live source during active onboarding. Daily lightweight sync (status/start date) + weekly full reconciliation. |
+| **ServiceNow** | REST API (Read/Write) | ✅ Available | Routing rules owned by IT — OPC can modify tickets but not routing configuration. `[CONFIRMED]` No governance chain exists for routing updates when specs change — changes fall between Procurement, IT, and HR Ops. Building access for Manchester/Leeds only. |
+| **Master Tracker** | Microsoft Graph API (Read/Write Excel on OneDrive) | ⚠️ Available but stable | Column layout stable ~2 years. Hidden columns (risk flags, notes) are Priya's private context layer. Use header-based reading. `[CONFIRMED]` |
+| **Outlook** | Microsoft Graph API (Read/Send) | ✅ Available | Used for: escalation drafts, Birmingham/Dublin building access requests, reactive sensitivity signal detection (inbound stakeholder emails). |
 | **SharePoint** | Microsoft Graph API (Read) | ✅ Available | Onboarding doc library. Static content — low integration risk. |
-| **Saba LMS** | ❌ No API | 🚫 Not available | OPC does not interact with Saba (Work Stream 1 only). Wave 2 constraint for compliance training agent. |
-| **Equipment Spec Repository** | TBD (SharePoint List or JSON file) | 🆕 Must be created | Critical dependency. Without this, OPC cannot validate equipment specs. Must be maintained quarterly by division ops leads. |
+| **Saba LMS** | ❌ No API | 🚫 Not available | OPC does not interact with Saba (Work Stream 1 only). Wave 2 constraint. |
+| **Equipment Spec + Location Repository** | TBD (SharePoint List or JSON file) | 🆕 Must be created | Covers equipment specs AND location-code routing expectations. Location-code mismatches are a confirmed failure mode. `[CONFIRMED]` |
+| **Birmingham Facilities Mgmt** | Email only | ⚠️ Manual | Building access for Birmingham office. No API. Agent drafts email, coordinator sends. `[CONFIRMED]` |
+| **Dublin Office Manager** | Email only | ⚠️ Manual | Building access / fob for Dublin. No API. Agent drafts email, coordinator sends. `[CONFIRMED]` |
 
 ---
 
@@ -50,7 +52,8 @@ The OPC is an AI agent that ensures every new hire at Aldridge & Sykes has corre
 - Flag onboarding cases as Green or Amber risk
 - Send routine status notifications to HR coordinators
 - Sync tracker data to Workday (end-of-week batch, standard fields only)
-- Request badge ordering and building access for standard hires
+- Request badge ordering and building access **for Manchester/Leeds via ServiceNow**
+- Auto-elevate risk flag when inbound stakeholder email detected about a currently-Green hire
 
 ### The agent MAY with human approval:
 
@@ -59,26 +62,35 @@ The OPC is an AI agent that ensures every new hire at Aldridge & Sykes has corre
 - Flag onboarding cases as Red risk
 - Send escalation emails to IT leadership or senior stakeholders
 - Propose equipment spec for roles where spec confidence < 80% or last update > 90 days
+- **Draft building access emails for Birmingham** (to facilities management) and **Dublin** (to office manager) — coordinator reviews and sends
+- **Propose rehire sub-classification** (reactivate vs new record) based on gap heuristic (<1yr: reactivate, ≥1yr: new, Dublin: always new)
 
 ### The agent MAY NOT:
 
 - Classify non-standard hire types (contractor-to-FTE, rehires with frozen records) — human decides
 - Determine a hire's start date or modify it
-- Modify ServiceNow routing configuration (only tickets)
+- Modify ServiceNow routing configuration (only tickets) — routing config is IT-managed
 - Send communications to clients or external parties
 - Make decisions involving immigration/visa status (Work Stream 4 — out of scope)
 - Override Priya's risk flag or escalation decisions
 - Access or modify the Saba LMS
 - Delete or restructure the Master Tracker
+- **Negotiate with IT about record reactivation** — IT responses are inconsistent; human handles
+- **Update Procurement's order catalogue or ServiceNow routing rules** — governance gap exists between Procurement, IT, and HR Ops; agent can detect mismatches but cannot fix root cause
 
-### Escalation triggers:
+### Escalation routing:
+
+Escalations are routed to the **division coordinator** by default:
+- Consulting / Dublin → **Dev**
+- Audit / Tax → **Sarah**
+- Edge cases / Red flags / CFO involvement → **Priya** (always)
 
 | Code | Condition | Target | Urgency |
 |------|-----------|--------|---------|
-| ET-1 | Non-standard hire type detected | HR Coordinator or Priya | 4 hours |
-| ET-2 | Equipment spec confidence < 80% | Priya | Before ticket creation |
+| ET-1 | Non-standard hire type detected | Division coordinator or Priya | 4 hours |
+| ET-2 | Equipment spec or location-code confidence < 80% | Priya | Before ticket creation |
 | ET-3 | SLA breach + high-sensitivity hire | Priya | Immediate (with context) |
-| ET-4 | Auto-routing produced unexpected category | HR Coordinator | 2 hours |
+| ET-4 | Auto-routing produced unexpected category or location-code mismatch | Division coordinator | 2 hours |
 | ET-5 | Proposed priority jump > 1 level | Priya | Before execution |
 | ET-6 | Agent confidence < 70% on any decision | HR Coordinator | Before acting |
 

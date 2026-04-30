@@ -80,7 +80,12 @@ Business context:  HR Ops team (3 people), supporting ~190 system & access setup
 
 **Consequence:** Adds work instead of saving it — Priya must context-switch from her current work to investigate.
 
-**Recovery path:** Every escalation must include: hire profile, stakeholder context, ticket timeline, what the agent already tried (priority reset, etc.), and a recommended next action.
+**Recovery path:** Every escalation must include: hire profile, stakeholder context, ticket timeline, what the agent already tried (priority reset, etc.), and a recommended next action. Delivered as a formatted email to the division coordinator (or Priya for Red/CFO cases). Template sections:
+1. **Hire Profile** — name, type, division, office, start date, sensitivity level
+2. **Issue Summary** — 1–2 sentences describing the problem
+3. **Ticket Timeline** — created date → current status → SLA status (days remaining or days overdue)
+4. **Actions Taken** — what the agent already did (e.g. "one-level priority reset on Day 4")
+5. **Recommended Next Step** — what the agent proposes the human do next
 
 ### FM-4: Agent acts beyond delegation boundary — resets priority when human judgment needed
 
@@ -101,7 +106,7 @@ Business context:  HR Ops team (3 people), supporting ~190 system & access setup
 - Non-standard hire classification requires human decision — the agent surfaces options but doesn't decide
 - Equipment spec confidence degrades over time — human must confirm when specs may be stale
 
-The agent leads on execution but human oversight governs escalation decisions and edge-case routing. The adjacent archetype "Fully Agentic" was rejected because silent failures in this domain [Artefact 1.1] cause visible reputational damage that warrants human-in-the-loop for non-routine decisions.
+The agent leads on execution but human oversight governs escalation decisions and edge-case routing. The adjacent archetype "Fully Agentic" was rejected because silent failures in this domain [Artefact 1.1] cause visible reputational damage that warrants human-in-the-loop for non-routine decisions. **This is also validated by prior experience:** a Power Automate flow attempted 3 years ago auto-created tickets for all hire types including contractors, generated incorrect tickets, and required a week of cleanup. The lesson: non-standard hire types must not be fully automated. `[CONFIRMED — Priya, Q8]`
 
 ---
 
@@ -109,27 +114,41 @@ The agent leads on execution but human oversight governs escalation decisions an
 
 | # | Condition | Target role | Urgency |
 |---|---|---|---|
-| ET-1 | Non-standard hire type detected (conversion, rehire, secondment) requiring classification decision | HR Coordinator or Priya | Within 4 hours of hire record creation |
-| ET-2 | Equipment spec confidence < 80% (spec repository last updated >90 days for this division) | Priya | Before raising ServiceNow ticket |
+| ET-1 | Non-standard hire type detected (conversion, rehire, secondment) requiring classification decision | Division coordinator: **Dev** (consulting/Dublin), **Sarah** (audit/tax), or **Priya** (edge cases) | Within 4 hours of hire record creation |
+| ET-2 | Equipment spec or location-code confidence < 80% | Priya | Before raising ServiceNow ticket |
 | ET-3 | SLA breach detected AND hire is flagged as high-sensitivity | Priya | Immediate — with full context package |
-| ET-4 | ServiceNow auto-routing produced unexpected result (ticket category ≠ expected based on role/division) | HR Coordinator | Within 2 hours of ticket creation |
+| ET-4 | ServiceNow auto-routing produced unexpected result (ticket category ≠ expected based on role/division/location) | Division coordinator: **Dev** or **Sarah** per assignment | Within 2 hours of ticket creation |
 | ET-5 | Proposed priority escalation from P3→P1 or P4→P1 (high-jump) | Priya | Before execution |
-| ET-6 | Agent confidence below threshold on any decision (< 70% — e.g. ambiguous role code, division not in spec repository) | HR Coordinator | Before acting |
+| ET-6 | Agent confidence below threshold on any decision (< 70% — e.g. ambiguous role code, division not in spec repository) | Division coordinator per assignment | Before acting |
 
 **ET-1 classification rule:** A hire is considered **non-standard** if any of the following are true:
 - `hire_type ∉ {FTE}` (contractor, secondment)
 - `rehire_flag = true` (returning employee)
 - `conversion_flag = true` (contractor-to-FTE or secondment-to-FTE)
 - Workday record has a pre-existing employee ID with a different status (potential frozen record)
+- `office = Dublin` AND rehire (Dublin entity is separate in Workday — always requires new record regardless of gap) `[CONFIRMED — Priya, Q4]`
 
-All other hires are **standard** → agent proceeds without ET-1 escalation. `[ASSUMED — confirm full enumeration with Priya]`
+All other hires are **standard** → agent proceeds without ET-1 escalation.
+
+**ET-1 rehire sub-classification (agent proposes, human confirms):**
+- Rehire gap < 1 year → propose "reactivate existing record" `[CONFIRMED — Priya's heuristic, Q4]`
+- Rehire gap ≥ 1 year → propose "create new record, link old in notes"
+- Dublin rehires → always propose "create new record" (entity constraint)
+- Note: IT's response to reactivation requests is inconsistent — agent proposes but human must confirm with IT `[CONFIRMED — Priya, Q4]`
 
 **ET-3 high-sensitivity determination:** A hire is flagged as high-sensitivity if:
 1. Tracker "Risk flag" column has been manually set to Amber or Red by Priya (manual flag takes precedence), OR
-2. Auto-inferred: `division = Consulting AND job_level ≥ Senior Manager`, OR
-3. Auto-inferred: hire's notes column contains keywords indicating executive sponsorship (e.g. "director's hire", "CFO", "partner")
+2. Auto-inferred: `division = Consulting AND job_level ≥ Manager` → Amber baseline `[CONFIRMED — Priya, Q3: "Consulting hires above manager level are almost always sensitive"]`
+3. Auto-inferred: `office = Dublin` → elevated sensitivity (treat as consulting-level) `[CONFIRMED — Priya, Q3: "Dublin Country Manager has a short fuse"]`
+4. Auto-inferred: `partner_sponsored = true` OR hire's notes column contains keywords ("director's hire", "CFO", "partner", "poach", "competitor") → Red from day one `[CONFIRMED — Priya, Q3/Q7]`
+5. Auto-inferred: `client_facing = true` AND start_date is imminent (≤ 3 days) → elevated `[CONFIRMED — Priya, Q7: "client notices if no laptop on day one"]`
+6. **Reactive signal:** inbound email from a stakeholder (hiring manager, PA, director) about a specific hire → auto-elevate to Amber if currently Green `[CONFIRMED — Priya, Q7: "sometimes I don't know until the PA calls"]`
 
-Manual flag overrides auto-inference. If no flag is set and auto-inference conditions are not met, the hire is standard-sensitivity. `[ASSUMED — confirm inference rules with Priya]`
+Manual flag overrides auto-inference. If no flag is set and no auto-inference conditions are met, the hire is standard-sensitivity.
+
+**Field source notes:**
+- `partner_sponsored`: no structured Workday field exists. Determined by keyword detection in tracker notes column only. Keywords: "director's hire", "CFO", "partner", "poach", "competitor", "board". If a structured field becomes available in Workday, prefer it over keyword matching.
+- `client_facing`: check Workday field `job_profile.client_facing_flag` if exposed by API. If field not available, infer from role_code: codes starting with `CONS-` in the consulting division are assumed client-facing. `[ASSUMED — confirm Workday field availability with Raj in IT]`
 
 ---
 
@@ -141,19 +160,31 @@ The agent polls Workday daily (06:00 UTC) for hire records with `start_date ≤ 
 2. Reads hire attributes (type, role code, division, country, job level)
 3. Applies the ET-1 classification rule — if non-standard, escalates immediately; if standard, proceeds to provisioning orchestration
 
+**Provisioning orchestration (standard hires):** All ServiceNow tickets for a given onboarding are created in parallel at case initiation — laptop, software, badge, and building access. No sequencing dependencies between ticket types. Building access follows location-aware rules: Manchester/Leeds via ServiceNow (agent acts); Birmingham/Dublin via email draft (agent proposes, coordinator sends).
+
 ### Daily monitoring cadence
 At 08:00 UTC daily, the agent checks all active onboarding cases (tracker status ≠ "Closed") for:
 - ServiceNow ticket SLA breaches (per § Operating Parameters)
-- Auto-routing mismatches (per routing expectation map)
+- Auto-routing mismatches — including **location-code validation** (verify ticket routed to correct office's facilities/IT team) `[CONFIRMED — Priya, Q1: Birmingham location codes were once misconfigured]`
 - Risk flag changes requiring notification
+- **Reactive sensitivity signals:** inbound stakeholder emails about specific hires (elevate risk flag if currently Green)
 
-### End-of-week sync
-Every Friday at 17:00 UTC, the agent syncs tracker → Workday for the following fields:
+**Reactive email matching logic:** Scan Outlook inbox (HR Ops shared mailbox) for messages received since last check. For each message: (a) match sender against `hiring_manager_email` or `manager_email` from Workday records for all active onboarding cases; (b) search subject and body for hire's full name. If match found → link to case and evaluate ET-3 reactive sensitivity rule. If no confident match (multiple potential hires, or sender not a known stakeholder) → flag for coordinator review. Prefer false positives over false negatives — a flagged non-issue costs less than a missed escalation email.
+
+### Daily lightweight sync (status + start date)
+At 09:00 UTC daily, the agent syncs the following "hard data" fields from tracker → Workday:
 - `tracker."Visible status"` → `Workday.onboarding_status`
-- `tracker."Start"` → validate matches `Workday.start_date` (read-only check — flag discrepancy to coordinator if mismatched, do not overwrite)
-- `tracker."Workday status"` → validate matches `Workday.employment_status` (read-only check)
+- `tracker."Start"` → validate matches `Workday.start_date` (flag discrepancy, do not overwrite)
 
-`[ASSUMED — field mapping to be confirmed with IT once Workday API endpoints are accessible]`
+This prevents stale Workday data from affecting downstream systems (payroll runs mid-month). `[CONFIRMED — Priya, Q6: "A selective daily sync for 'hard' data would be fine"]`
+
+### End-of-week full reconciliation
+Every Friday at 17:00 UTC, the agent performs a full reconciliation:
+- All daily sync fields (above)
+- `tracker."Workday status"` → validate matches `Workday.employment_status` (read-only check)
+- Flag any tracker rows where data has diverged from Workday beyond the daily sync fields
+
+Notes and risk flags are **never** synced to Workday — they are tracker-only working data. `[CONFIRMED — Priya, Q6: "Some of the notes are messy drafts — I wouldn't want those going into Workday"]`
 
 ---
 
@@ -170,10 +201,12 @@ Every Friday at 17:00 UTC, the agent syncs tracker → Workday for the following
 
 SLA clock starts at ticket creation timestamp. Business days = Mon–Fri excluding UK public holidays. If ServiceNow ticket has a custom "expected delivery date" field, use that instead of the default window.
 
-### Equipment spec confidence scoring
+### Equipment spec and location-code confidence scoring
+
+The OPC validates both equipment specs AND location codes when assessing ticket-creation confidence. Location-code mismatches (e.g. Birmingham hire routed to Manchester facilities) are a confirmed failure mode. `[CONFIRMED — Priya, Q1: Birmingham location codes once misconfigured for 2 weeks]`
 
 ```
-confidence = (match_score × 0.6) + (freshness_score × 0.4)
+confidence = (match_score × 0.5) + (freshness_score × 0.3) + (location_score × 0.2)
 
 match_score:
   - role_code + division found in spec repository → 100%
@@ -185,6 +218,11 @@ freshness_score:
   - spec last updated 31–60 days ago → 85%
   - spec last updated 61–90 days ago → 70%
   - spec last updated > 90 days ago → 50% (and decays 1%/day thereafter)
+
+location_score:
+  - office location code matches expected ServiceNow routing group → 100%
+  - office location code not found in routing map → 50%
+  - office location code maps to a different routing group than expected → 20% (likely misconfigured)
 ```
 
 Gate: if `confidence < 80%` → fire ET-2 (human confirms spec before ticket creation).
@@ -199,7 +237,10 @@ When proposing a priority change for a breached ticket:
 escalation_score = (days_overdue × 2) + (sensitivity_weight × 3) + (stakeholder_escalation_count × 2)
 
 sensitivity_weight:
-  - high-sensitivity hire → 3
+  - partner-sponsored hire → 4 (Red from day one) [CONFIRMED — Priya, Q3]
+  - consulting hire above manager level → 3 [CONFIRMED — Priya, Q3]
+  - Dublin office hire → 3 [CONFIRMED — Priya, Q3: "Dublin Country Manager has a short fuse"]
+  - client-facing with imminent start → 3 [CONFIRMED — Priya, Q7]
   - standard hire → 1
 
 stakeholder_escalation_count:
@@ -222,17 +263,19 @@ stakeholder_escalation_count:
 
 - Monitor ServiceNow ticket status for all active onboardings (daily cadence)
 - Detect SLA breaches by comparing ticket age against standard fulfilment windows
+- **Validate location codes** on ServiceNow tickets (check ticket routed to correct office's team) `[NEW — from Q1]`
 - Update Master Tracker with current status from ServiceNow and Workday
-- Sync tracker data to Workday (end-of-week batch) for standard fields
+- **Daily lightweight sync** of status + start date from tracker → Workday `[REVISED — from Q6]`
 - Raise ServiceNow tickets for standard FTE hires where equipment spec confidence ≥ 80% and auto-routing matches expected category
-- Send routine status notifications to coordinators (informational, not escalation)
+- Send routine status notifications to **division coordinator** (Dev or Sarah per assignment) `[REVISED — from Q10]`
 - Flag onboardings as "Green" when all tickets are on track
 
 ### AGENT ACTS, HUMAN NOTIFIED AFTER:
 
-- Reset ServiceNow ticket priority from P4→P3 or P3→P2 (one-level escalation) with notification to coordinator
+- Reset ServiceNow ticket priority from P4→P3 or P3→P2 (one-level escalation) with notification to **division coordinator**
 - Flag onboarding as "Amber" risk in tracker with reason
-- Request badge ordering and building access (low-risk, standard process)
+- **Auto-elevate risk flag** when inbound stakeholder email detected about a currently-Green hire `[NEW — from Q7]`
+- Request badge ordering and building access **for Manchester/Leeds** via ServiceNow (low-risk, standard process) `[REVISED — from Q9]`
 - Send routine "your ServiceNow ticket is in progress" update to the new hire's stakeholder
 
 ### AGENT PROPOSES, HUMAN APPROVES BEFORE ACTION:
@@ -240,8 +283,11 @@ stakeholder_escalation_count:
 - Proposed equipment spec for non-standard roles or roles where spec was last updated >90 days ago
 - Priority escalation of >1 level (P4→P2 or P3→P1) — agent drafts justification, human approves
 - Raising ServiceNow tickets for non-standard hire types (conversions, rehires)
+- **Draft building access email for Birmingham** (to facilities management company) — coordinator reviews and sends `[NEW — from Q9]`
+- **Draft building access email for Dublin** (to office manager) — coordinator reviews and sends `[NEW — from Q9]`
 - Flagging onboarding as "Red" risk — agent drafts the flag with evidence, Priya confirms
 - Sending escalation emails to IT leadership or senior stakeholders
+- **Propose rehire sub-classification** (reactivate vs new record) based on gap heuristic `[NEW — from Q4]`
 
 ### HUMAN TAKES OVER (agent provides supporting context):
 
@@ -250,4 +296,5 @@ stakeholder_escalation_count:
 - Resolving cases where ServiceNow and Workday data conflict and root cause is unclear
 - Any decision involving the hire's start date (delay/advance)
 - Disputes with IT team about ticket priority or fulfilment responsibility
+- **IT coordination for rehire record reactivation** — IT's response is inconsistent; human must negotiate `[NEW — from Q4]`
 
