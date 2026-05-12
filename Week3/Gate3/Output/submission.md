@@ -1,0 +1,442 @@
+﻿# Gate 3 — Interim Submission (Thursday EOD)
+
+> **Participant:** Chris Edwards
+> **Engagement:** MedFlex — Agentic Transformation of Shift Matching
+> **Submission:** Interim draft — Deliverables #1, #2, #3
+> **Status:** Pre-pushback — will be revised against Marcus's Friday memo
+
+---
+
+# Deliverable #1 — Problem Framing & Success Metrics
+
+> **Engagement:** MedFlex — Agentic Transformation of Shift Matching  
+> **Version:** Interim draft (Thursday EOD)  
+> **Status:** Pre-pushback — will be revised against Marcus's Friday memo
+
+---
+
+## 1. The Stated Request vs. the Real Problem
+
+### What Marcus asked for
+*"10x the business without 10x-ing the coordinators"* — in 8 weeks.
+
+### What this actually means
+Marcus's $14M → $200M revenue target in 24 months requires MedFlex to handle ~14x the current shift volume with roughly the same coordinator headcount. Today, 8 coordinators make ~960 matching decisions/day with a 4.2-hour average time-to-fill. At 14x volume, that's ~13,400 decisions/day — impossible with manual matching.
+
+### The real problem (grounded in discovery)
+**MedFlex's matching process is entirely manual, cognitively intensive, and dependent on tribal knowledge — making it the binding constraint on business growth.**
+
+Specifically:
+1. **Free-text intake creates unnecessary cognitive load.** Hospital requests arrive as unstructured email/portal submissions into ServiceNow. Coordinators manually parse requirements (credentials needed, shift timing, facility type) before they can even begin matching. This is pure waste — parsing, not deciding.
+
+2. **Matching is a multi-constraint search performed from memory and manual lookup.** Coordinators search across credentials, availability, proximity, hospital preferences, and nurse preferences — simultaneously. Experienced coordinators (10+ years) do this faster because they've internalised patterns; new coordinators take significantly longer. The knowledge isn't systematised.
+
+3. **Speed is the competitive weapon, and MedFlex is losing.** Hospitals submit to multiple agencies. The first agency to respond with a qualified match wins. At 4.2 hours average time-to-fill, MedFlex loses to faster competitors — even when they have the better nurse.
+
+4. **The no-confirmation model creates avoidable failures.** Nurses are notified by SMS/email but don't confirm — silence equals acceptance. 12% don't show up. MedFlex only discovers this when the hospital calls. This damages the relationship MedFlex lives on.
+
+5. **Concurrent submission creates race conditions.** The same nurse gets submitted to multiple hospitals. When one confirms, MedFlex must withdraw from others. If two hospitals confirm simultaneously, MedFlex must "rework the proposal" — losing time and credibility.
+
+### What this is NOT about
+- **Not about credential verification.** Compliance is a separate team with a separate process. Credential status is already on the nurse profile card. The agent reads the status; it doesn't verify credentials. [CONFIRMED: Marcus, discovery session]
+- **Not about replacing coordinators.** The recommendation engine failed because coordinators didn't trust it and feared for their jobs. The solution must evolve the coordinator role, not eliminate it.
+- **Not about building a chatbot.** The chatbot failed because hospitals don't want to interact with a bot in a competitive market. The agent is internal — hospitals never see it.
+
+---
+
+## 2. Stakeholder-Specific Success Criteria
+
+### For MedFlex (the business)
+| What success looks like | Why it matters |
+|---|---|
+| Handle 14x volume with ≤2x coordinator growth | Enables $200M revenue target without proportional headcount cost |
+| Time-to-fill < 1 hour (from 4.2h) | Competitive advantage: first agency to respond wins the placement |
+| Coordinator adoption > 80% within 8 weeks of launch | Avoids recommendation engine failure mode (built but not used) |
+| Reduced training time for new coordinators | Enables flexible team scaling as business grows |
+
+### For hospitals (the customers)
+| What success looks like | Why it matters |
+|---|---|
+| Faster response to shift requests | Hospitals submit to multiple agencies — speed wins |
+| Better credential match (reduce mismatch component of 7% rate) | Fewer rejected submissions = stronger agency relationship |
+| Fewer no-shows (reduce from 12%) | No-shows disrupt hospital operations and erode trust in MedFlex |
+| Consistent quality regardless of which coordinator handles it | Hospital experience shouldn't depend on whether they get the 10-year veteran or the new hire |
+
+### For nurses (the workers)
+| What success looks like | Why it matters |
+|---|---|
+| Better shift matches to preferences and proximity | Nurses who get preferred assignments are less likely to no-show or defect to competitors |
+| Proactive confirmation instead of silence-equals-acceptance | Reduces accidental no-shows from missed notifications |
+| Transparent process (know why they were/weren't matched) | Trust in the agency; reduces defection to competitors |
+
+---
+
+## 3. Measurable KPIs
+
+Two time horizons apply: the **8-week MVP** (Phase 1 — what Marcus sees first) and the **6-month mark** (Phase 2 — progressive autonomy). Success is measured at both; the 8-week targets are the gate for continued investment.
+
+| KPI | Baseline (current) | Target (8-week MVP) | Target (6-month) | How measured |
+|---|---|---|---|---|
+| **Time-to-fill** | 4.2 hours avg | < 2 hours | < 1 hour | ServiceNow: timestamp(request received) → timestamp(hospital confirmation) |
+| **Decisions per coordinator per day** | ~120 | ~200 (agent-assisted) | ~500+ (agent-led) | Agent dashboard: matches reviewed/approved per coordinator per shift |
+| **Mismatch rate** | 7% | < 5% | < 3% | Hospital rejection reason codes (credential vs. preference) |
+| **No-show rate** | 12% | < 8% | < 5% | Hospital-reported no-shows / total confirmed placements |
+| **Coordinator adoption** | N/A (new system) | > 80% using agent daily | > 95% | Login/usage metrics: % of coordinators who use agent for > 50% of matches |
+| **Agent match acceptance rate** | N/A | > 60% of agent-proposed matches accepted by coordinator | > 80% | Coordinator accept/reject/modify on agent proposals |
+| **Intake parsing accuracy** | Manual (no baseline) | > 90% of free-text requests correctly parsed | > 95% | Spot-check sample: parsed fields vs. coordinator interpretation |
+
+---
+
+## 4. The "8 Weeks" Decoded
+
+Marcus clarified in discovery: 8 weeks is not "complete transformation" — it's "show me what I can get for my investment." The 8-week deliverable should be an MVP that demonstrates measurable value on the primary matching workflow, not a full agentic transformation of all four workflow components.
+
+**8-week MVP scope:** Agent-assisted matching for the highest-volume, most-structured shift requests (standard credential matches with availability confirmed). Coordinator reviews and approves. More complex matches (preference-heavy, competitive situations, partial matches) remain coordinator-led with agent context support.
+
+**What "ROI in 8 weeks" looks like:** If the agent reduces average matching time from 4.2 hours to 2 hours on even 50% of requests, that's ~480 coordinator-hours/day saved — visible, measurable, and defensible to the board.
+
+
+
+---
+
+# Deliverable #2 — Engagement Intake & Scope
+
+> **Engagement:** MedFlex — Agentic Transformation of Shift Matching  
+> **Version:** Interim draft (Thursday EOD)  
+> **Status:** Pre-pushback — will be revised against Marcus's Friday memo
+
+---
+
+## 1. Business Context
+
+**MedFlex** is a healthcare staffing agency (200 employees, 5-state US region) that matches travel nurses to hospital shift requests. Revenue: $14M. Target: $200M in 24 months post-Series B.
+
+**Core business model:** B2B with hospital systems (demand side) and B2C with travel nurses (supply side). MedFlex earns margin on placements — hospitals pay MedFlex, MedFlex pays the nurse. Speed and match quality determine competitive position.
+
+**Competitive landscape:** Hospitals submit shift requests to multiple agencies simultaneously. The first agency to propose a credentialed, available nurse wins the placement. MedFlex competes on speed, match quality, and relationship — in that order.
+
+**Current operations:** 8 coordinators manually match ~960 shifts/day. Average time-to-fill: 4.2 hours. Mismatch rate: 7%. No-show rate: 12%.
+
+**Prior AI attempts:** Two failed projects — a customer-facing chatbot (hospitals rejected it in a competitive market) and a recommendation engine (coordinators didn't trust it, feared job security, accuracy was poor).
+
+---
+
+## 2. Stakeholder Map
+
+| Stakeholder | Role | Authority | Type | Disposition | Conflicting incentives |
+|---|---|---|---|---|---|
+| **Marcus Reyes** (CEO) | Sponsor, point of contact | Budget, go/no-go | **Decision-maker** | Supportive but sceptical (burned twice). Wants speed and ROI. | Wants full automation ("automate as much as possible") but hasn't reconciled this with coordinator adoption risk. |
+| **Kim** (Senior Coordinator / Head of Ops) | Operational lead, undisclosed | Day-to-day workflow authority | **Influencer / potential blocker** | Unknown — not available in discovery | Likely protective of her team's expertise and job security. May resist if agent threatens coordinator role. Marcus deferred operational detail to her repeatedly. |
+| **Aaron** (IT) | Technical infrastructure | System access, API decisions | **Potential blocker** | Unknown — not available | Controls ServiceNow, nurse DB, integration surface. Could block if systems aren't API-accessible. Must be engaged in Phase 0. |
+| **Linda** (Compliance) | Credential verification | Regulatory compliance sign-off | **Influencer** | Unknown — not available | Separate process — may resist if agent scope creeps into compliance territory. |
+| **8 Coordinators** | End users of the agent | None (but adoption determines success) | **Potential blockers (adoption)** | Likely resistant (rejected recommendation engine, fear job security) | Want to keep their jobs. Have tacit knowledge the system can't capture yet. Will sabotage if threatened. |
+| **Hospital administrators** | Customers (demand side) | Placement acceptance/rejection | **External influencer** | Neutral — want fast, accurate matches | Don't care about MedFlex's internal process; care about speed and quality. Will switch agencies if service degrades. |
+| **Travel nurses** | Workers (supply side) | Availability, show/no-show | **External influencer** | Neutral — want good shifts, fair pay | May be registered with multiple agencies. Loyalty is to pay rate and shift quality, not to MedFlex specifically. |
+| **Board / investors** | Governance | Funding, growth targets | **Decision-maker (funding)** | Pressure for ROI on Series B | Want $200M in 24 months. May push for faster/bigger scope than is safe. |
+
+**Key conflict:** Marcus wants "automate everything" but his coordinators rejected the last AI tool. The engagement must navigate this by designing for coordinator empowerment (agent-assisted), not coordinator replacement (fully agentic).
+
+---
+
+## 3. Constraints
+
+| Constraint | Source | Impact on design |
+|---|---|---|
+| **8-week timeline** | CEO expectation (discovery confirmed: "show me ROI in 8 weeks") | MVP must be narrow: one workflow, agent-assisted, measurable improvement |
+| **Two failed AI projects** | Chatbot + recommendation engine | Design must be visibly different: internal (not customer-facing), transparent (not black box), empowering (not replacing) |
+| **Coordinator adoption risk** | Discovery: team feared job security, rejected recommendation engine | Progressive autonomy model. Coordinator reviews all matches in Phase 1. |
+| **Free-text intake (email)** | ServiceNow receives raw free text from hospitals | Agent must parse unstructured text — this is an NLP/reasoning challenge, not a form-fill |
+| **Competitive speed pressure** | Hospitals submit to multiple agencies. First response wins. | Time-to-fill reduction is the primary value metric, not accuracy alone |
+| **5-state regulatory landscape** | US healthcare staffing is state-regulated (nursing licenses, certifications) | Agent must check credential status against shift location. Compliance team owns verification; agent reads the result. |
+| **No nurse confirmation model** | Silence = acceptance. Nurse doesn't confirm shifts. | Contributes to 12% no-show rate. Agent should introduce proactive confirmation. |
+| **Concurrency** | Same nurse submitted to multiple hospitals simultaneously | Agent needs a locking/reservation model to prevent double-booking |
+| **Budget** | Series B just closed — funding available but Board expects ROI. No specific budget disclosed. | Design for cost-awareness: LLM inference cost per request must be tracked. Phase 0 should include cost modelling. |
+
+---
+
+## 4. Risk Register
+
+| Risk | Likelihood | Impact | Mitigation |
+|---|---|---|---|
+| **Coordinator rejection** — team refuses to use agent (repeats recommendation engine failure) | High | Critical | Agent-led + coordinator oversight (not fully agentic). Coordinator approves all matches in Phase 1. Progressive autonomy only after demonstrated trust. |
+| **Matching accuracy insufficient** — agent proposes wrong nurses | Medium | High | Confidence scoring with human review threshold. Agent explains reasoning (transparent, not black box). Measure acceptance rate. |
+| **Free-text parsing errors** — agent misinterprets hospital requests | Medium | Medium | Human-in-the-loop for low-confidence parses. Feedback loop: coordinators correct parses, agent learns. |
+| **Stale credential data** — nurse card shows valid but credential has lapsed | Medium | High (compliance + reputational) | Agent cross-references credential expiry date against shift date. Flag any credential expiring within 7 days of shift. |
+| **No-show rate doesn't improve** — root cause is competitive poaching, not MedFlex's process | Medium | Medium | Proactive confirmation workflow. No-show risk scoring based on nurse history, shift distance, time-of-day. Even partial improvement is measurable. |
+| **ServiceNow API limitations** — IT can't provide real-time API access | Low–Medium | High | Fallback: batch export + polling. Design agent to work with delay. Confirm with Aaron (IT) in Phase 0. |
+| **CEO scope creep** — Marcus pushes to include compliance verification, hospital portal, nurse app | High | Medium | Hold scope boundary with D#2 out-of-scope list. Propose compliance as Phase 2 if business grows. |
+| **8-week timeline is unrealistic for full MVP** | Medium | Medium | Phase 0 (2 weeks): integration + data access confirmed. Phase 1 (6 weeks): agent-assisted matching for standard cases. Not all 960 decisions/day — start with structurally simple matches. |
+
+---
+
+## 5. MVP Scope (Phase 1: 8 weeks)
+
+### In scope
+
+| Component | Description | Rationale |
+|---|---|---|
+| **Free-text intake parsing** | Agent parses hospital shift requests from ServiceNow (email-originated) into structured fields: credentials required, shift timing, facility, location, special requirements | Removes highest-waste cognitive step. Every match starts with parsing — fixing this accelerates everything downstream. |
+| **Agent-assisted shift matching** | Agent proposes top-N candidate nurses ranked by: credential match, availability, proximity, hospital feedback history. Coordinator reviews and approves/modifies. | Core value delivery. Addresses the binding constraint (manual search) without triggering adoption risk (coordinator still decides). |
+| **Credential expiry guard** | Agent checks credential expiry date against shift date before proposing a nurse. Flags any credential expiring within 7 days. | Directly reduces the credential component of the 7% mismatch rate. Low-effort, high-signal. |
+| **Proactive nurse confirmation** | Agent sends confirmation request to the nurse (SMS/email) after coordinator approves match. Nurse must confirm within a time window. If no confirmation, agent flags for rebooking. | Addresses 12% no-show rate. Changes from "silence = acceptance" to "confirmation required." |
+| **Coordinator dashboard** | Single view: incoming requests (parsed), agent-proposed matches (ranked), match history, acceptance/rejection tracking | Adoption enabler. Gives coordinators a tool that's better than their current workflow, not a threat to it. |
+
+**Geographic scope:** All 5 states from day one. The matching logic is state-agnostic (credential status is already validated per-state by the compliance team). No reason to geo-limit the MVP — the agent reads credential status, it doesn't verify by state.
+
+### Out of scope (with rationale)
+
+| Excluded | Rationale | When it could come in |
+|---|---|---|
+| **Credential/compliance verification** | Separate team, separate process. CEO explicitly scoped it out. Coach feedback confirmed: focus on matching. | Phase 2 — when business growth creates compliance team capacity pressure |
+| **Hospital-facing portal or channel changes** | Hospitals submit via email/portal/phone today. Pack §3 explicitly excludes this. | Not planned — channel strategy is sales/marketing, not FDE |
+| **Nurse-facing mobile app** | Nurses reached by phone/SMS/email today. Pack §3 explicitly excludes this. | Not planned |
+| **Pricing engine / margin optimisation** | Pack §3 explicitly excludes. Pricing is MedFlex's existing process. | Not planned |
+| **Fully autonomous matching (no coordinator review)** | Two failed AI projects. Coordinator adoption is the top risk. Phase 1 must build trust before removing oversight. | Phase 2–3 — after demonstrated accuracy and coordinator trust. Progressive autonomy. |
+| **Multi-hospital concurrent submission orchestration** | Complex concurrency problem. Requires locking model and real-time state management. Important but not MVP. | Phase 2 — after basic matching is working |
+| **No-show prediction model** | Requires historical data analysis. Value is clear but dependent on data availability. | Phase 2 — agent accumulates placement history data in Phase 1, builds predictive model in Phase 2 |
+
+---
+
+## 6. Phasing
+
+| Phase | Duration | Deliverable | Success metric |
+|---|---|---|---|
+| **Phase 0: Integration & Data** | Weeks 1–2 | ServiceNow API access confirmed. Nurse DB schema mapped. Credential status field validated. Sample data flowing. | Data pipeline operational. No code yet — integration contracts only. |
+| **Phase 1: Agent-Assisted Matching** | Weeks 3–8 | Free-text parsing + candidate ranking + coordinator review dashboard + credential expiry guard + proactive confirmation. | Time-to-fill < 2h on agent-assisted matches. Coordinator adoption > 80%. Mismatch rate < 5%. |
+| **Phase 2: Progressive Autonomy** | Months 3–6 | Agent auto-submits simple matches (high-confidence, standard credentials, confirmed availability). Coordinator oversight for complex/edge cases. No-show prediction. Concurrent submission management. | Time-to-fill < 1h overall. Decisions/coordinator/day > 500. |
+
+
+
+---
+
+# Deliverable #3 — Agentic Solution Architecture + ADRs
+
+> **Engagement:** MedFlex — Agentic Transformation of Shift Matching  
+> **Version:** Interim draft (Thursday EOD)  
+> **Status:** Pre-pushback — will be revised against Marcus's Friday memo
+
+---
+
+## 1. Workflow Decomposition & Delegation
+
+### Shift Matching Workflow — End to End
+
+| Step | Current state (manual) | Proposed delegation | Rationale |
+|---|---|---|---|
+| **1. Receive hospital request** | Lands in ServiceNow as free text (email, portal, phone) | **RPA/automation** — queue monitoring, ticket creation | Deterministic: poll ServiceNow, create internal work item. No judgment. |
+| **2. Parse request into structured fields** | Coordinator reads free text, mentally extracts: credentials, shift time, facility, location, special requirements | **Agent-led + coordinator oversight** | This is where agent reasoning adds value. Free text is ambiguous ("need an experienced ICU nurse for nights" requires NLP interpretation of credential level, specialty, shift type). Coordinator reviews parsed output, corrects errors. |
+| **3. Search for candidate nurses** | Coordinator manually searches nurse DB by credentials, filters by availability, proximity | **Agent-led** (search is the agent's primary function) | Multi-constraint search across structured data. Agent searches faster and more completely than any human — no judgment needed for the search itself, only for the ranking. |
+| **4. Rank candidates by fit** | Coordinator uses experience + gut feeling to pick the best match from search results | **Agent-led + coordinator oversight** | The ranking is where agent reasoning over context occurs. Agent weighs: credential match strength, proximity, availability certainty, hospital feedback history, nurse preference alignment, no-show risk. Coordinator reviews ranking and approves or reorders. |
+| **5. Check credential expiry against shift date** | Coordinator checks nurse card (often skipped under time pressure) | **Agent-led (autonomous)** | Deterministic check: if credential_expiry_date < shift_date + 7_day_buffer → flag. No judgment needed. Hard constraint — never skip. |
+| **6. Select nurse and compose submission** | Coordinator picks top candidate, prepares submission to hospital | **Human-led + agent support** | Coordinator makes final selection. Agent pre-composes the submission with candidate details. For standard cases, coordinator approves with one click. For complex cases (preferences, partial matches), coordinator edits. |
+| **7. Submit to hospital** | Coordinator sends submission via existing channel | **RPA/automation** | Deterministic: send formatted submission via email/portal. No judgment. |
+| **8. Notify nurse** | Coordinator sends SMS/email notification to nurse | **Agent-led (autonomous)** | Template notification. Currently no confirmation required — agent adds confirmation request. |
+| **9. Track nurse confirmation** | Currently doesn't exist (silence = acceptance) | **Agent-led (new capability)** | Agent sends confirmation request, tracks response, flags non-response for coordinator escalation. |
+| **10. Handle hospital response** | Coordinator processes acceptance/rejection | **Agent-led + coordinator oversight** | If accepted: update records, withdraw from other submissions. If rejected: agent proposes next-best candidate. Coordinator reviews. |
+| **11. Backfill on no-show / cancellation** | Coordinator scrambles to re-match (reactive, hospital calls) | **Agent-led + coordinator oversight** | Agent identifies backup candidates from original search. Coordinator approves rapid replacement. Speed is critical here — the agent's speed advantage is highest. |
+
+### Delegation Summary
+
+| Archetype | Count | Steps |
+|---|---|---|
+| **Agent-led (autonomous)** | 2 | Credential expiry check, nurse notification + confirmation |
+| **Agent-led + coordinator oversight** | 4 | Request parsing, candidate ranking, hospital response handling, backfill |
+| **Human-led + agent support** | 1 | Final nurse selection + submission composition |
+| **RPA/automation** | 2 | Request intake monitoring, hospital submission |
+| **Human-only** | 0 | — |
+| **New capability (agent-created)** | 1 | Proactive nurse confirmation tracking |
+
+### Where the Agent Decision Lives
+
+**The agent decision is in Steps 2 and 4 — parsing and ranking.** This is where contextual reasoning determines an outcome a rule-based system couldn't reach:
+
+- **Step 2 (parsing):** "Need an experienced ICU nurse, preferably someone who's worked with Dr. Patel's team before, for Saturday overnight" → Agent must interpret "experienced" (how many years? what tier?), "ICU" (credential code), "preferably worked with Dr. Patel" (hospital preference — soft constraint), "Saturday overnight" (shift window extraction). A rule-based parser can't handle the preference nuance or the implicit credential interpretation.
+
+- **Step 4 (ranking):** Given 12 credentialed, available nurses within 30 miles, the agent must reason about: Which nurse has the best hospital feedback from this facility? Which nurse has the lowest no-show risk for overnight shifts? Which nurse hasn't worked 6 nights in a row (fatigue risk)? Which nurse's preferences best align (closer to home, prefers this hospital)? This is multi-factor contextual reasoning, not a weighted score formula.
+
+---
+
+## 2. System Architecture
+
+The end-to-end data flow from hospital request to nurse confirmation is shown in Figure 1 below.
+
+```mermaid
+flowchart TD
+    subgraph Hospital["Hospital Systems"]
+        H1[Email / Portal / Phone]
+    end
+
+    subgraph ServiceNow["ServiceNow"]
+        SN1[Request Queue]
+    end
+
+    subgraph MedFlexAgent["Shift Matching Agent"]
+        A1[Intake Parser]
+        A2[Candidate Search Engine]
+        A3[Ranking Engine]
+        A4[Credential Guard]
+        A5[Confirmation Tracker]
+        A6[Backfill Engine]
+    end
+
+    subgraph CoordinatorUI["Coordinator Dashboard"]
+        C1[Parsed Request Review]
+        C2[Ranked Candidate List]
+        C3[Approve / Modify / Reject]
+        C4[Match History + Analytics]
+    end
+
+    subgraph NurseDB["Nurse Database"]
+        N1[Profiles + Credentials]
+        N2[Availability]
+        N3[Placement History]
+        N4[Preferences]
+    end
+
+    subgraph Notifications["Notification Service"]
+        NS1[SMS Gateway]
+        NS2[Email Service]
+    end
+
+    H1 --> SN1
+    SN1 --> A1
+    A1 --> C1
+    C1 -->|Confirmed parse| A2
+    A2 --> N1
+    A2 --> N2
+    A2 --> N4
+    A2 --> A3
+    A3 --> A4
+    A4 --> C2
+    C2 --> C3
+    C3 -->|Approved| NS1
+    C3 -->|Approved| NS2
+    NS1 --> A5
+    NS2 --> A5
+    A5 -->|No confirmation| C3
+    A5 -->|Confirmed| N3
+
+    classDef agent fill:#e1f5fe,stroke:#0288d1
+    classDef human fill:#fff3e0,stroke:#f57c00
+    classDef external fill:#f3e5f5,stroke:#7b1fa2
+
+    class A1,A2,A3,A4,A5,A6 agent
+    class C1,C2,C3,C4 human
+    class H1,SN1,N1,N2,N3,N4,NS1,NS2 external
+```
+
+*Figure 1 — Shift Matching Agent architecture. Blue nodes = agent-driven. Orange nodes = coordinator-driven (human). Purple nodes = external systems.*
+
+---
+
+## 3. Integration Points
+
+| System | Access method | Auth | Agent reads | Agent writes | Risk | Degradation if down |
+|---|---|---|---|---|---|---|
+| **ServiceNow** | REST API (assumed — confirm with Aaron) | OAuth 2.0 / API key [ASSUMED] | Shift requests (free text), queue status, timestamps | Parsed request fields, match status updates | API availability unconfirmed. | Fallback: batch polling every 5 min. Agent queues work; coordinators see delay, not failure. |
+| **Nurse Database** | Direct DB access or API (assumed) | Service account with read/write [ASSUMED] | Profiles, credentials, credential expiry dates, availability, preferences, placement history | Match records, confirmation status | Schema unknown. Credential expiry field format unconfirmed. | Agent cannot match without nurse data. **Hard dependency.** Coordinator falls back to manual workflow. Alert on >30s response time. |
+| **SMS Gateway** | API (existing — used for current nurse notifications) | API key (existing) | Delivery status, confirmation responses | Shift notifications, confirmation requests | Existing integration — lower risk. | Nurse notification delayed. Agent retries 3x, then flags for coordinator to call manually. |
+| **Email Service** | API or SMTP (existing) | SMTP auth or API key (existing) | Delivery status | Hospital submissions, nurse notifications | Existing integration — lower risk. | Hospital submission delayed. Agent queues and retries. Coordinator can send manually as fallback. |
+
+**Integration assumptions (to confirm with Aaron in Phase 0):**
+- [A-INT-1] ServiceNow has a REST API that supports real-time read of new tickets. **Confidence: Medium.**
+- [A-INT-2] Nurse database has credential expiry dates as a structured date field, not just "valid/invalid" flag. **Confidence: Medium.**
+- [A-INT-3] SMS gateway supports two-way messaging (nurse can reply to confirm). **Confidence: Low** — current notifications are one-way.
+
+---
+
+## 4. Architecture Decision Records
+
+### ADR-1: Agent-Led with Coordinator Oversight vs. Fully Agentic Matching
+
+**Title:** Agent proposes matches; coordinator reviews and approves all matches in Phase 1.
+
+**Status:** Proposed
+
+**Context:**
+- Marcus wants to "automate as much as possible" and says there's nothing that specifically requires human intervention.
+- However, MedFlex's recommendation engine failed because coordinators didn't use it — they didn't trust the accuracy and feared for their jobs.
+- Experienced coordinators have 10+ years of tacit matching knowledge that isn't systematised.
+- The 7% mismatch rate suggests current human matching is imperfect — but coordinators believe they're better than a machine (and for preference-heavy matches, they may be right).
+- The competitive market means a bad match is worse than a slow match — reputational damage accumulates.
+
+**Decision:** Agent-led + coordinator oversight for all matches in Phase 1. The agent proposes a ranked list of candidates with reasoning. The coordinator approves, reorders, or rejects. No match goes to hospital without coordinator sign-off.
+
+**Alternatives considered:**
+
+| Alternative | Pros | Cons |
+|---|---|---|
+| **Fully agentic (no coordinator review)** | Maximum speed. Maximum volume scaling. Time-to-fill approaches minutes. | Highest adoption risk — repeats recommendation engine failure. Coordinators have no role → job security fears → sabotage. Accuracy unproven on MedFlex's specific data. |
+| **Human-led + agent support (agent as context tool only)** | Lowest adoption risk. Coordinators feel empowered, not replaced. | Doesn't achieve 14x volume scaling. Coordinator is still the bottleneck. Doesn't justify Series B investment. |
+| **Hybrid: auto-submit simple matches, coordinator reviews complex** | Best of both: speed on easy cases, human judgment on hard ones. Progressive autonomy. | Requires a confidence threshold that's calibrated accurately. Miscalibrated threshold = either too many bad matches (auto-submitted) or too much human review (no speed gain). |
+
+**Consequences:**
+- Positive: Addresses adoption risk directly. Builds coordinator trust through transparency. Captures tacit knowledge via coordinator feedback (every rejection/modification is training data).
+- Negative: Slower than fully agentic. May not achieve <1h time-to-fill in Phase 1 (but <2h is achievable). Coordinators remain a partial bottleneck.
+- Acceptable because: Phase 1 is trust-building. Phase 2 introduces progressive autonomy (Alternative C above) once confidence threshold is calibrated from Phase 1 data.
+
+**Reversibility:** High. Moving from agent-led+oversight to progressive autonomy is a configuration change (adjust confidence threshold), not an architectural rebuild.
+
+---
+
+### ADR-2: Free-Text NLP Parsing vs. Structured Intake Form
+
+**Title:** Agent parses free-text hospital requests rather than requiring hospitals to use a structured form.
+
+**Status:** Proposed
+
+**Context:**
+- Hospitals submit shift requests via email (biggest channel), portal, and phone — all arriving in ServiceNow as free text.
+- Marcus explicitly excludes changing the hospital submission channel ("Building a hospital-facing portal for shift submission" is out of scope).
+- A structured form would be the easiest path for accurate parsing — but hospitals won't use it. The chatbot failed partly because hospitals didn't want to change how they submit.
+- Competitive market: any friction added to the hospital's process risks losing them to a competitor.
+
+**Decision:** Agent uses NLP to parse free-text requests into structured fields. Coordinator reviews parsed output before matching begins.
+
+**Alternatives considered:**
+
+| Alternative | Pros | Cons |
+|---|---|---|
+| **Structured intake form (hospital-facing)** | Perfect data quality. No parsing errors. | Explicitly out of scope. Adds friction to hospitals. Failed chatbot attempted this. Hospitals will switch agencies. |
+| **Template-based extraction (regex/rules)** | Simpler to build. No LLM cost. Predictable. | Hospital requests are genuinely unstructured — same information expressed 50 different ways. Regex can't handle "need someone like Nurse Maria" or "preferably worked Dr. Patel's floor." |
+| **Manual parsing continues (no change)** | Zero risk. Coordinators keep doing what they do. | Doesn't remove the parsing cognitive load. Coordinators spend [ASSUMED: 2-3 min] per request on parsing alone. At 14x volume, this is untenable. |
+
+**Consequences:**
+- Positive: Removes highest-waste cognitive step. No change required from hospitals. Agent reasoning on free text is a genuine agentic capability (not RPA/rules).
+- Negative: NLP parsing will have errors. Coordinator must review every parse in Phase 1. Cost of LLM inference per request. Potential hallucination risk (agent infers a credential the hospital didn't request).
+- Mitigated by: Coordinator review of parsed output. Confidence scoring on each parsed field. Feedback loop: corrections improve the parser.
+
+**Reversibility:** Medium. Switching from NLP to structured intake requires hospital-side change — much harder to reverse. But switching from NLP to template extraction is a model swap, not an architecture change.
+
+---
+
+### ADR-3: Proactive Nurse Confirmation vs. Status Quo (Silence = Acceptance)
+
+**Title:** Agent sends confirmation requests to nurses after match approval; non-response triggers escalation.
+
+**Status:** Proposed
+
+**Context:**
+- Current model: nurse is notified of shift via SMS/email. No response required. Silence = acceptance.
+- 12% no-show rate. MedFlex discovers no-shows when the hospital calls.
+- Marcus says availability system has "no problem" — contradicted by the no-show rate.
+- Competitive market: nurses may accept other agencies' offers after being assigned by MedFlex.
+- Nurses must notify within 24 hours if they can't attend. Shifts typically assigned 2–3 days in advance.
+
+**Decision:** Agent sends a confirmation request after the coordinator approves a match. Nurse must confirm within [ASSUMED: 4 hours] or the match is flagged for rebooking.
+
+**Alternatives considered:**
+
+| Alternative | Pros | Cons |
+|---|---|---|
+| **Keep silence = acceptance (no change)** | No nurse-side change. No friction. | 12% no-shows continue. Hospital trust erodes. No early warning for rebooking. |
+| **Mandatory phone confirmation (coordinator calls nurse)** | Highest confirmation certainty. Human touch. | Doesn't scale at 14x volume. Each call = 3–5 minutes of coordinator time. |
+| **Auto-confirm with follow-up ping 12h before shift** | Lighter touch than immediate confirmation. Less friction for nurses. | Doesn't catch no-shows early enough for rebooking. 12h may be too late to find a replacement. |
+
+**Consequences:**
+- Positive: Early warning on non-confirmations → more time for backfill. Reduces no-show rate. Data on confirmation patterns feeds no-show prediction model in Phase 2.
+- Negative: Adds friction to nurses. Some nurses may find the confirmation request annoying. Risk: nurse ignores confirmation request like they ignore current notifications.
+- Mitigated by: SMS confirmation is low-friction (reply "Y"). Non-response flags for coordinator, not auto-cancellation. Nurse can still call to cancel within 24h.
+
+**Reversibility:** High. Confirmation workflow can be turned off (revert to notification-only) with a configuration change.
+

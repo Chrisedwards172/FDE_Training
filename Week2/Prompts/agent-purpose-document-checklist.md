@@ -6,8 +6,9 @@
 
 ### Assumption Log
 
-- [ ] Appears at top of document
+- [ ] Appears at top of document — this is the **single consolidated log** for the entire deliverable set
 - [ ] KPI targets and cost-per-case estimates logged as assumptions where not scenario-given
+- [ ] All assumptions from other deliverables (D1–D3, D5–D7) are consolidated here with unique IDs
 
 ### Agent identity
 

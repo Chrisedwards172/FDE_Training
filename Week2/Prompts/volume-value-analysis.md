@@ -4,9 +4,9 @@
 
 ## Instruction
 
-Produce **Deliverable #3 — Volume × Value Analysis** for the scenario in `../scenario-1.md`.
+Produce **Deliverable #3 — Volume × Value Analysis** for the scenario provided.
 
-**Input dependency:** Load Deliverable #2 (Delegation Suitability Matrix) from `../Output/`. You also need the volume/frequency data from the scenario's four work streams.
+**Input dependency:** Load Deliverable #2 (Delegation Suitability Matrix) from the output folder. You also need the volume/frequency data from the scenario's four work streams.
 
 Plot **all 4 work streams** on the Volume × Value grid (not just the 2 you decomposed in Deliverable #1). Use the scenario's stated volumes and your delegation analysis to score each.
 
@@ -18,7 +18,8 @@ Identify the **primary agentic target** and justify why it wins. If a work strea
 
 ## Output location
 
-`../Output/volume-value-analysis-scenario-1-{NNN}.md`
+- Practice: `../Output/volume-value-analysis-{NNN}.md`
+- Gate: `../Gate2/Output/volume-value-analysis-{NNN}.md`
 
 ## After generation
 

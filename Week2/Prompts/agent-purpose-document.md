@@ -6,7 +6,7 @@
 
 Produce **Deliverable #4 — Agent Purpose Document** for the primary agentic target identified in Deliverable #3 (Volume × Value Analysis).
 
-**Input dependencies:** Load from `../Output/`:
+**Input dependencies:** Load from the output folder:
 - Deliverable #1 (Cognitive Load Map) — for JtDs, micro-tasks, and breakpoints
 - Deliverable #2 (Delegation Suitability Matrix) — for archetype assignments and boundary rationale
 - Deliverable #3 (Volume × Value Analysis) — for the primary target identification
@@ -23,7 +23,8 @@ The Agent Purpose Document is the Week 2 equivalent of Week 1's capability spec.
 
 ## Output location
 
-`../Output/agent-purpose-document-scenario-1-{NNN}.md`
+- Practice: `../Output/agent-purpose-document-{NNN}.md`
+- Gate: `../Gate2/Output/agent-purpose-document-{NNN}.md`
 
 ## After generation
 

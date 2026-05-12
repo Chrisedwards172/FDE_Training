@@ -4,12 +4,11 @@
 
 ## Completeness check
 
-### Assumption Log (top of document)
+### Assumption Log (consolidated in Agent Purpose Document)
 
-- [ ] Log appears **before** Section 1, not at the bottom
-- [ ] Every entry has: #, Type (AGENT/HUMAN), Assumption, Confidence (Low/Medium/High), Test
-- [ ] Every `[ASSUMED]` tag in the body has a matching numbered entry
+- [ ] Every `[ASSUMED]` tag in the body has a matching numbered entry in the **Agent Purpose Document's** Assumption Log
 - [ ] No assumption is marked High confidence unless validated by a coach session
+- [ ] `[ASSUMED — AN]` references use the APD's numbering scheme
 
 ### Section 1 — Lived-Process Narrative
 

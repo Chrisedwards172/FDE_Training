@@ -23,7 +23,7 @@
 - [ ] At least 2 questions target **lived work vs documented process** gaps from your Cognitive Load Map
 - [ ] At least 1 question targets a **system/data gap** from Deliverable #5
 - [ ] At least 1 question targets a **delegation boundary** — where you're unsure if a task should be agentic vs human-led
-- [ ] At least 1 question tests a **specific assumption** from your assumption log
+- [ ] At least 1 question tests a **specific assumption** from the Agent Purpose Document's assumption log
 
 ### Live round readiness
 

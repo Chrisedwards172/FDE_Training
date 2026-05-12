@@ -6,7 +6,7 @@
 
 ### Assumption Log
 
-- [ ] Appears at top of document
+- [ ] Every `[ASSUMED]` tag references a numbered entry in the **Agent Purpose Document's** consolidated Assumption Log
 - [ ] API availability assumptions clearly flagged (many will be inferred, not stated)
 
 ### Inventory table

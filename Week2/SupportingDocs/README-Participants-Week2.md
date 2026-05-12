@@ -10,6 +10,13 @@ Week 2 introduces **ATX — Agentic Transformation** — the methodology the pro
 
 Assess a business process as it is actually lived (not as it is documented), map its cognitive work using ATX, determine the delegation architecture, and produce an agent design precise enough to begin development.
 
+**Which business process?** You'll work on **two different scenarios** this week:
+
+- **Monday–Thursday — a practice-domain scenario** your coach introduces at Monday's orientation. Practice-domain options are not pre-published; your coach presents them on the day and you pick one to anchor your self-directed ATX work, your closed build loop, and your Thursday peer-review submission.
+- **Friday — Gate 2 sealed scenario**, released at the start of the timed exercise (09:00 CET). A different, previously unseen business process. You may not reuse your peer-reviewed practice artefact as your gate submission.
+
+The two scenarios are intentionally different so the gate tests whether you can apply ATX to fresh material, not whether you can polish one piece of work all week.
+
 ## By Friday, you must demonstrate that you can:
 
 - **Elicit how work actually happens** — not what the SOP says

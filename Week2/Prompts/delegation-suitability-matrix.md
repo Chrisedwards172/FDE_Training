@@ -4,9 +4,9 @@
 
 ## Instruction
 
-Produce **Deliverable #2 — Delegation Suitability Matrix** for the scenario in `../scenario-1.md`.
+Produce **Deliverable #2 — Delegation Suitability Matrix** for the scenario provided.
 
-**Input dependency:** This deliverable takes the micro-task inventory from Deliverable #1 (Cognitive Load Map) as its primary input. Load your most recent Cognitive Load Map from `../Output/` before generating.
+**Input dependency:** This deliverable takes the micro-task inventory from Deliverable #1 (Cognitive Load Map) as its primary input. Load your most recent Cognitive Load Map from the output folder before generating.
 
 For every micro-task and JtD cluster identified in Deliverable #1, score on the 7 delegation suitability dimensions and assign a delegation archetype with written rationale.
 
@@ -14,7 +14,8 @@ For every micro-task and JtD cluster identified in Deliverable #1, score on the 
 
 ## Output location
 
-`../Output/delegation-suitability-matrix-scenario-1-{NNN}.md`
+- Practice: `../Output/delegation-suitability-matrix-{NNN}.md`
+- Gate: `../Gate2/Output/delegation-suitability-matrix-{NNN}.md`
 
 ## After generation
 

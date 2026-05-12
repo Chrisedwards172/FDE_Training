@@ -51,6 +51,33 @@ When executing any prompt from `Week2/Prompts/` (or `Week2/Gate2/Prompts/` if cr
 | 11 | Production Spec Checklist | `../Week1/SupportingDocs/production-spec-checklist.md` | Buildability bar — still applies to agent purpose documents |
 | 12 | Scenario file | `./SupportingDocs/enriched_scenarios.md` (practice) or gate scenario (released at gate start) | Scenario text and participant HUMAN assumptions |
 
+## Active Scenario (Gate 2)
+
+**Scenario file:** `./Gate2/Gate2-Participant-Pack.md` — Apex Distribution Ltd, Customer Operations transformation.
+
+**Sample artefacts:** `./Gate2/Artefacts/` — 7 CSV batch exports from the Aurum Billing legacy system plus a README describing schema and cadence.
+
+**In-pack artefacts (§4 of the participant pack):**
+1. Driver voicemail (delivery exception — refused delivery, damaged pallet)
+2. Email thread (billing dispute — fuel surcharge on damaged consignment, 9-day resolution)
+3. SMS exchange (ETA inquiry — lookup + dispatch check)
+4. SOP fragment (exception handling v2.3 — stale, references retired DispatchHub)
+5. Aurum Billing batch export catalogue + sample CSVs
+
+**The 4 work streams:**
+1. Delivery exceptions (~180/day, 12 min/case) — dispatcher judgment-driven
+2. ETA inquiries (~400/day, 4 min/case) — mostly lookup, edge cases need driver call
+3. Dispatch adjustments (~90/day, 18 min/case) — tight time pressure
+4. Billing disputes (~60/day, 28 min/case) — crosses legacy billing system
+
+**Main stakeholder:** Sarah Whitmore, COO. Sceptical of chatbots and consultants; burned by 2 prior automation failures. Open to something that works.
+
+**Key constraints:**
+- Aurum Billing: batch-file-only exports (daily CSV, T-1/T-2 lag), no real-time API, 48h turnaround for invoice modifications, schema changes quarterly without notice
+- Dispatch console: Java/Citrix, limited API surface
+- SOP is stale (references retired DispatchHub, last revised Oct 2023)
+- Sandra applied a £170 goodwill credit via manual override with no audit log entry
+
 ## Output Placement
 
 | Artefact type | Path |
@@ -89,8 +116,11 @@ When producing any of the 7 deliverables, apply these structural rules automatic
 
 ### All deliverables
 
-- **Assumption Log first**: every deliverable starts with an Assumption Log table (before any content). Columns: `#`, `Type` (AGENT/HUMAN), `Assumption`, `Confidence` (Low/Medium/High), `Test`.
-- **Source tagging**: every non-trivial claim is tagged `[Artefact X.Y]` (grounded in scenario sample artefacts), `[INFERRED — scenario brief]` (derived from scenario text), or `[ASSUMED]` (with a matching log entry). No untagged factual claims about how work happens.
+- **Assumption Log (split between D4 and D5)**:
+  - **Deliverable #4 (Agent Purpose Document)** holds assumptions about the scenario, stakeholder behaviour, design decisions, KPI targets, and delegation boundaries — things you inferred from the brief or decided during design.
+  - **Deliverable #5 (System/Data Inventory)** holds assumptions about systems, data, artefacts, and tooling — things you inferred from the sample artefacts or assumed about systems the brief did not detail (per participant pack: "If you need more than what is here, that is an assumption — name it as one in Deliverable 5").
+  - All other deliverables reference assumptions by ID (e.g. `[ASSUMED — A3]`) pointing back to the relevant log in D4 or D5. Do not duplicate logs in every file.
+- **Source tagging**: every non-trivial claim is tagged `[Artefact N]` (grounded in scenario sample artefacts), `[INFERRED — scenario brief]` (derived from scenario text), or `[ASSUMED — AN]` (referencing the numbered entry in D4 or D5's Assumption Log). No untagged factual claims about how work happens.
 - **Lived work over documented process**: if the scenario provides sample artefacts (emails, tracker excerpts, flowchart annotations, call transcripts), ground claims in those — not in SOPs or flowcharts. Name any documented ↔ lived divergences explicitly.
 
 ### Deliverable #1 — Cognitive Load Map

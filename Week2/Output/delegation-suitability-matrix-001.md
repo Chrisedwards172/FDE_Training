@@ -1,17 +1,10 @@
 # Delegation Suitability Matrix — HR Onboarding Coordination (Aldridge & Sykes)
 
 > **Deliverable #2** | Scenario 1 (enriched) | Practice run
+>
+> **Assumptions:** All assumptions referenced in this document (e.g. `[ASSUMED — A1]`) are logged in the consolidated Assumption Log in the [Agent Purpose Document](./agent-purpose-document-001.md).
 
 ---
-
-## Assumption Log
-
-| # | Type | Assumption | Confidence | Test |
-|---|------|-----------|------------|------|
-| A1 | AGENT | ServiceNow API supports ticket creation, priority modification, and status query without IT team involvement | Medium | Ask Priya: "Can your team create and modify ServiceNow tickets via API, or does IT gate that?" |
-| A2 | AGENT | Workday REST API can read hire type, role code, country, and employment history sufficient for routing decisions | Medium | Confirm API scope with IT: "Which Workday fields are exposed via API?" |
-| A3 | AGENT | The Master Tracker could be replaced or supplemented by a system with proper API access (e.g. moving from Excel to a structured database) | Low | Ask Priya: "Would you be open to the tracker being replaced by something that updates in real-time, or is the Excel format load-bearing for you?" |
-| A4 | AGENT | Saba LMS has no workaround (no CSV import, no browser automation tolerance) — all assignments are truly manual | Medium | Ask Priya/IT: "Is there any bulk assignment mechanism in Saba? Has anyone tried RPA or browser automation against it?" |
 
 ---
 

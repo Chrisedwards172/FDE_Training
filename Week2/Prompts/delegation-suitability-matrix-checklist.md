@@ -6,8 +6,7 @@
 
 ### Assumption Log
 
-- [ ] Appears at top of document
-- [ ] Every `[ASSUMED]` tag in the body has a matching numbered entry
+- [ ] Every `[ASSUMED]` tag in the body has a matching numbered entry in the **Agent Purpose Document's** consolidated Assumption Log
 
 ### Suitability gate (pre-filter)
 

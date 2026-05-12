@@ -1,19 +1,8 @@
 # System/Data Inventory — Onboarding Provisioning Coordinator (OPC)
 
 > **Deliverable #5** | Scenario 1 (enriched) | Practice run
-
----
-
-## Assumption Log
-
-| # | Type | Assumption | Confidence | Test |
-|---|------|-----------|------------|------|
-| A1 | AGENT | Workday REST API exposes hire type, role code, division, country, start date, and employment history sufficient for OPC's classification and spec-matching needs | Medium | Ask IT: "Which Workday API endpoints are active? What fields are exposed?" |
-| A2 | AGENT | ServiceNow API supports: ticket creation (POST), priority update (PATCH), status query (GET), and comment addition — all without IT-team gating | Medium | Ask IT: "Does HR Ops have a service account for ServiceNow API access, or do all modifications go through IT?" |
-| A3 | AGENT | The Master Tracker (Excel on OneDrive) can be accessed programmatically via Microsoft Graph API or a move to SharePoint Lists | Medium | Ask Priya + IT: "Would you accept the tracker moving to SharePoint Lists for real-time access, or is the Excel format required?" |
-| A4 | AGENT | Outlook integration via Microsoft Graph API is permitted for sending notifications/escalation drafts from a service account | Medium | Ask IT: "Is there a shared mailbox or service account the agent could use for automated notifications?" |
-| A5 | AGENT | Equipment spec repository does not currently exist as a system — it would need to be created as part of Wave 1 | High | Scenario provides no evidence of a structured spec repository; Priya carries this knowledge. Confirmed by Artefact 1.1 (spec change not reflected in systems) |
-| A6 | AGENT | No SSO/RBAC constraints prevent a service account from reading Workday or writing to ServiceNow | Low | Ask IT: "Are there security policies that restrict API access to named users only?" |
+>
+> **Assumptions:** All assumptions referenced in this document are logged in the consolidated Assumption Log in the [Agent Purpose Document](./agent-purpose-document-001.md).
 
 ---
 

@@ -1,23 +1,10 @@
 # Cognitive Load Map — HR Onboarding Coordination (Aldridge & Sykes)
 
 > **Deliverable #1** | Scenario 1 (enriched) | Practice run
+>
+> **Assumptions:** All assumptions referenced in this document (e.g. `[ASSUMED — A3]`) are logged in the consolidated Assumption Log in the [Agent Purpose Document](./agent-purpose-document-001.md).
 
 ---
-
-## Assumption Log
-
-| # | Type | Assumption | Confidence | Test |
-|---|------|-----------|------------|------|
-| A1 | AGENT | ServiceNow auto-routing rules are configurable by HR Ops without IT involvement | Low | Ask Priya: "When the consulting laptop spec changed, who updated ServiceNow routing — your team or IT?" |
-| A2 | AGENT | Priya's Master Tracker is the de facto coordination system; Workday is updated in batch, not per-event | Medium | Ask Priya: "How many times per week do you update Workday from the tracker? Is it always end-of-week?" [Artefact 1.2 states end-of-week] |
-| A3 | AGENT | The 3-person team has no formal task allocation — Priya triages and the two coordinators pick up work | Low | Ask Priya: "How do you decide which coordinator handles which onboarding? Is it round-robin, by division, or ad hoc?" |
-| A4 | AGENT | Badge ordering and building access are handled through ServiceNow (same as IT requests) | Low | Ask Priya: "Does badge ordering go through ServiceNow, or is there a separate facilities system?" |
-| A5 | AGENT | Payroll setup is a Workday-native process that triggers automatically from the hire record | Medium | Ask Priya: "Does payroll setup require a separate manual step, or does Workday handle it once the record is created?" |
-| A6 | AGENT | The Saba LMS has no API and training assignments are made manually through the LMS UI | Medium | Scenario states "no API" — confirm: "Is there any bulk upload or CSV import in Saba, or is every assignment click-by-click?" |
-| A7 | AGENT | The compliance flowchart (v4.2) is the only documented routing logic; the pencilled footnote is not reflected in any system | Medium | Ask Priya: "Are there other routing rules that exist only in your team's heads, beyond the TEMP-EXT → CONS-D change?" |
-| A8 | AGENT | Country-based compliance routing (UK vs Republic of Ireland) adds additional paths not shown in the flowchart fragment | Low | Ask Priya: "The flowchart shows hire-type routing. Where does the UK vs Ireland compliance split happen?" |
-| A9 | AGENT | "Risk flag" and "Buddy override" columns in the tracker are Priya's personal additions, not shared with the coordinators systematically | Low | Ask Priya: "Do your coordinators see the hidden columns, or is that your private view?" |
-| A10 | HUMAN | The consulting division is the primary source of onboarding complaints, not audit or tax | Medium | Scenario states CFO complaint originated from consulting division — confirm if other divisions have similar friction |
 
 ---
 

@@ -4,9 +4,9 @@
 
 ## Instruction
 
-Produce **Deliverable #6 — Discovery Questions for the Main Stakeholder** based on the scenario in `../scenario-1.md` and your outputs from Deliverables #1–5.
+Produce **Deliverable #6 — Discovery Questions for the Main Stakeholder** based on the scenario provided and your outputs from Deliverables #1–5.
 
-**Input dependencies:** Load your most recent versions of Deliverables #1–5 from `../Output/`. Each deliverable will have surfaced gaps, assumptions, and tensions. The discovery questions should target those — not generic process questions.
+**Input dependencies:** Load your most recent versions of Deliverables #1–5 from the output folder. Each deliverable will have surfaced gaps, assumptions, and tensions. The discovery questions should target those — not generic process questions.
 
 **Key reference:** `../SupportingDocs/discovery-questioning-patterns.md` — especially the Funnel Pattern (Level 3: Probe) and the "Lived vs Documented" probe technique.
 
@@ -19,7 +19,8 @@ Produce **Deliverable #6 — Discovery Questions for the Main Stakeholder** base
 
 ## Output location
 
-`../Output/discovery-questions-scenario-1-{NNN}.md`
+- Practice: `../Output/discovery-questions-{NNN}.md`
+- Gate: `../Gate2/Output/discovery-questions-{NNN}.md`
 
 ## After generation
 

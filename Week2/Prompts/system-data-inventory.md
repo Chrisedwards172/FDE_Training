@@ -6,19 +6,20 @@
 
 Produce **Deliverable #5 — System/Data Inventory** for the agent designed in Deliverable #4 (Agent Purpose Document).
 
-**Input dependencies:** Load from `../Output/`:
+**Input dependencies:** Load from the output folder:
 - Deliverable #4 (Agent Purpose Document) — for the systems and data the agent needs
-- Scenario file (`../scenario-1.md`) — for the tooling sketch and sample artefacts
+- The scenario file — for the tooling sketch and sample artefacts
 
 For every system named in the scenario's tooling sketch **and** every system referenced in your Agent Purpose Document, produce an inventory entry. Pay particular attention to:
 
-- **Systems with no API** (e.g. Saba LMS in the practice scenario) — name the gap and its impact on agent design
-- **Shadow systems** (e.g. the Excel Master Tracker in the practice scenario) — these are lived-work tools not in the official tooling sketch
-- **Legacy or batch-only systems** — address constraints explicitly, don't hand-wave
+- **Systems with no real-time API** (e.g. batch-file-only legacy systems) — name the gap, the data lag, and its impact on agent design
+- **Shadow systems** — lived-work tools not in the official tooling sketch (manual overrides, workarounds, informal channels)
+- **Legacy or batch-only systems** — address constraints explicitly: export cadence, schema stability, modification turnaround, reconciliation lag. Don't hand-wave.
 
 ## Output location
 
-`../Output/system-data-inventory-scenario-1-{NNN}.md`
+- Practice: `../Output/system-data-inventory-{NNN}.md`
+- Gate: `../Gate2/Output/system-data-inventory-{NNN}.md`
 
 ## After generation
 

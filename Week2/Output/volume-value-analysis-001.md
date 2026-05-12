@@ -1,16 +1,8 @@
 # Volume × Value Analysis — HR Onboarding Coordination (Aldridge & Sykes)
 
 > **Deliverable #3** | Scenario 1 (enriched) | Practice run
-
----
-
-## Assumption Log
-
-| # | Type | Assumption | Confidence | Test |
-|---|------|-----------|------------|------|
-| A1 | AGENT | "Effective handling ~3 hrs/case" for new-hire setup includes monitoring/escalation time, not just initial record creation | Medium | Ask Priya: "When you say it takes 3 hours per onboarding, is that active work or does it include waiting and chasing?" |
-| A2 | AGENT | The 220/yr compliance training cases map nearly 1:1 to hires (every hire needs some compliance assignment) | High | Scenario states "~220/yr" for both compliance and buddy streams — matches hire volume |
-| A3 | AGENT | Edge-case resolution is a separate work stream because these cases consume disproportionate time and attention relative to their volume | Medium | Ask Priya: "Do edge cases always start as standard onboardings that escalate, or are they flagged from the start?" |
+>
+> **Assumptions:** All assumptions referenced in this document are logged in the consolidated Assumption Log in the [Agent Purpose Document](./agent-purpose-document-001.md).
 
 ---
 

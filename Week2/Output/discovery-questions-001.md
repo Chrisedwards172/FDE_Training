@@ -3,14 +3,8 @@
 > **Deliverable #6** | Scenario 1 (enriched) | Practice run
 > 
 > Questions prioritised by design impact — highest first. Top 5 are "must-ask" in the 10-minute live round.
-
----
-
-## Assumption Log
-
-| # | Type | Assumption | Confidence | Test |
-|---|------|-----------|------------|------|
-| A1 | AGENT | These questions are designed for the practice scenario (Aldridge & Sykes); the gate scenario will require fresh questions tied to its specific tensions | High | N/A — this is practice |
+>
+> **Assumptions:** All assumptions referenced in this document are logged in the consolidated Assumption Log in the [Agent Purpose Document](./agent-purpose-document-001.md).
 
 ---
 

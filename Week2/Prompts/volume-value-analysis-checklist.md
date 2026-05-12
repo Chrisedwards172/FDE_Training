@@ -6,7 +6,7 @@
 
 ### Assumption Log
 
-- [ ] Appears at top of document
+- [ ] Every `[ASSUMED]` tag references a numbered entry in the **Agent Purpose Document's** consolidated Assumption Log
 - [ ] Volume estimates sourced from scenario tagged `[Artefact]` or `[INFERRED — scenario brief]`
 - [ ] Non-determinism scores justified — not guessed
 

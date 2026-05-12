@@ -4,18 +4,16 @@
 
 ## Instruction
 
-Produce **Deliverable #1 — Cognitive Load Map** for the scenario in `../scenario-1.md`.
+Produce **Deliverable #1 — Cognitive Load Map** for the scenario provided.
 
-**Work streams to cover:** Select the 2 work streams with the richest sample artefacts in the scenario. For the practice scenario (HR Onboarding Coordination), this is likely:
+**Work streams to cover:** Select the 2 work streams with the **richest sample artefacts** in the scenario. Choose based on artefact density (emails, tracker excerpts, call transcripts, flowchart fragments) — not on which work stream seems most important. Artefacts ground your lived-work claims; without them, you're mapping the SOP.
 
-- **New-hire system & access setup** (grounded by Artefact 1.1 email thread + Artefact 1.2 master tracker)
-- **Compliance training assignment & tracking** (grounded by Artefact 1.3 flowchart fragment + tracker footnotes)
-
-Ground your lived-process narrative in the sample artefacts. Where the scenario doesn't give you enough, mark `[ASSUMED]` and log it.
+Ground your lived-process narrative in the sample artefacts. Where the scenario doesn't give you enough, mark `[ASSUMED — AN]` and add the entry to the Agent Purpose Document's consolidated Assumption Log.
 
 ## Output location
 
-`../Output/cognitive-load-map-scenario-1-{NNN}.md` — replace `{NNN}` with the next available 3-digit run suffix.
+- Practice: `../Output/cognitive-load-map-{NNN}.md`
+- Gate: `../Gate2/Output/cognitive-load-map-{NNN}.md`
 
 ## After generation
 
